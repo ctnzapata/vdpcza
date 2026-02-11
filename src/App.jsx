@@ -1,47 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
-import AuthGuard from './components/AuthGuard';
-import Hero from './components/Hero';
-import TravelGrid from './components/TravelGrid';
-import Footer from './components/Footer';
-import AdminPanel from './components/AdminPanel';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Layout from './components/Layout/Layout';
+import Login from './components/Auth/Login';
+import RequireAuth from './components/Auth/RequireAuth';
+import Dashboard from './components/Dashboard/Dashboard';
+import Travel from './components/Travel/Travel';
+import Memories from './components/Memories/Memories';
+import Playlist from './components/Playlist/Playlist';
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isAdminOpen, setIsAdminOpen] = useState(false);
-
-    useEffect(() => {
-        // Check for existing auth cookie
-        const authCookie = Cookies.get('sorpresa_auth');
-        if (authCookie === 'true') {
-            setIsAuthenticated(true);
-        }
-    }, []);
-
-    const handleLoginSuccess = () => {
-        Cookies.set('sorpresa_auth', 'true', { expires: 365 }); // Expire in 1 year
-        setIsAuthenticated(true);
-    };
-
-    if (!isAuthenticated) {
-        return <AuthGuard onLoginSuccess={handleLoginSuccess} />;
-    }
-
     return (
-        <div className="min-h-screen bg-rose-50 text-slate-700 overflow-x-hidden">
-            <Hero />
+        <AuthProvider>
+            <Routes>
+                <Route path="/login" element={<Login />} />
 
-            <main className="container mx-auto px-4 py-12 relative z-10">
-                <h2 className="text-4xl md:text-5xl font-script text-rose-400 text-center mb-12 drop-shadow-sm">
-                    Nuestra Historia de Viajes
-                </h2>
-                <TravelGrid />
-            </main>
+                {/* Protected Routes */}
+                <Route element={<RequireAuth><Layout /></RequireAuth>}>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/travel" element={<Travel />} />
+                    <Route path="/memories" element={<Memories />} />
+                    <Route path="/playlist" element={<Playlist />} />
+                </Route>
 
-            <Footer onAdminUnlock={() => setIsAdminOpen(prev => !prev)} />
-
-            {isAdminOpen && <AdminPanel onClose={() => setIsAdminOpen(false)} />}
-        </div>
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </AuthProvider>
     );
 }
 

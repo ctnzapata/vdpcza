@@ -11,6 +11,15 @@ import Playlist from './components/Playlist/Playlist';
 import Gifts from './components/Gifts/Gifts';
 import Restaurants from './components/Restaurants/Restaurants';
 import BucketList from './components/BucketList/BucketList';
+import Profile from './components/Auth/Profile';
+
+const RequireAdmin = ({ children }) => {
+    const { user } = useAuth();
+    if (user?.role !== 'admin') {
+        return <Navigate to="/" replace />;
+    }
+    return children;
+};
 
 function App() {
     return (
@@ -21,12 +30,13 @@ function App() {
                 {/* Protected Routes */}
                 <Route element={<RequireAuth><Layout /></RequireAuth>}>
                     <Route path="/" element={<Dashboard />} />
-                    <Route path="/travel" element={<Travel />} />
-                    <Route path="/memories" element={<Memories />} />
+                    <Route path="/travel" element={<RequireAdmin><Travel /></RequireAdmin>} />
+                    <Route path="/memories" element={<RequireAdmin><Memories /></RequireAdmin>} />
                     <Route path="/playlist" element={<Playlist />} />
                     <Route path="/gifts" element={<Gifts />} />
                     <Route path="/restaurants" element={<Restaurants />} />
                     <Route path="/bucket-list" element={<BucketList />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

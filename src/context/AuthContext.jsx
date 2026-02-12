@@ -24,29 +24,51 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const handleUserSession = async (session) => {
-        if (session?.user) {
-            // Whitelist Logic
-            const whitelist = import.meta.env.VITE_WHITELIST_EMAILS?.split(',') || [];
-            const userEmail = session.user.email;
+        try {
+            if (session?.user) {
+                const whitelist = import.meta.env.VITE_WHITELIST_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+                const userEmail = session.user.email.toLowerCase();
 
-            // If whitelist is defined and user is not in it, sign out
-            if (whitelist.length > 0 && !whitelist.includes(userEmail)) {
-                await supabase.auth.signOut();
-                alert('Acceso restringido: Este correo no está en la lista de invitados.');
-                setUser(null);
+                if (whitelist.length > 0 && !whitelist.includes(userEmail)) {
+                    await supabase.auth.signOut();
+                    alert('Acceso restringido: Este correo no está en la lista de invitados.');
+                    setUser(null);
+                } else {
+                    // Use maybeSingle() to avoid errors if the profile doesn't exist yet
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', session.user.id)
+                        .maybeSingle();
+
+                    if (profileError) console.error("Error fetching profile:", profileError);
+
+                    const finalRole = profile?.role || 'user';
+                    console.log("Sistema de Seguridad - Usuario detectado:", session.user.email);
+                    console.log("Sistema de Seguridad - Rol asignado:", finalRole);
+                    console.log("ID de usuario:", session.user.id);
+
+                    setUser({
+                        ...session.user,
+                        role: finalRole
+                    });
+                }
             } else {
-                setUser(session.user);
+                setUser(null);
             }
-        } else {
+        } catch (err) {
+            console.error("Auth session error:", err);
             setUser(null);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const value = {
         user,
         loading,
         signIn: (email) => supabase.auth.signInWithOtp({ email }),
+        signInWithPassword: (email, password) => supabase.auth.signInWithPassword({ email, password }),
         signOut: () => supabase.auth.signOut(),
     };
 

@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Quote, Sparkles, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, Quote, Sparkles, Clock, Star } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../supabaseClient';
 import AIChat from './AIChat';
 import MoodTracker from './MoodTracker';
 import DailyTrivia from './DailyTrivia';
 
 const Dashboard = () => {
+    const { user } = useAuth();
     const [timeLeft, setTimeLeft] = useState({ years: 0, months: 0, days: 0, hours: 0, minutes: 0 });
     const [quote, setQuote] = useState({ text: "Eres mi lugar favorito en el mundo.", author: "vdpcza" });
     const [showCounter, setShowCounter] = useState(false);
+    const [showWelcome, setShowWelcome] = useState(true);
+
+    const isAdmin = user?.role === 'admin';
 
     const startDateStr = import.meta.env.VITE_KEY_DATE || '18/06/2024';
 
@@ -71,6 +76,23 @@ const Dashboard = () => {
                 </div>
                 <h1 className="text-4xl font-serif text-white tracking-widest uppercase">vdpcza</h1>
                 <p className="text-[10px] text-rose-400 font-bold tracking-[.4em] uppercase mt-2">Nuestra Historia</p>
+
+                <AnimatePresence>
+                    {showWelcome && user && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="mt-6 glass px-6 py-3 rounded-2xl flex items-center gap-3 border-rose-500/20"
+                        >
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <span className="text-xs font-serif italic text-white/90">
+                                {isAdmin ? '¡Bienvenido, Administrador de Amor!' : '¡Bienvenida, mi Niña Linda! ✨'}
+                            </span>
+                            <button onClick={() => setShowWelcome(false)} className="text-white/40 hover:text-white ml-2 text-lg">&times;</button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </motion.header>
 
             {/* Live Status */}

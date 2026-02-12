@@ -1,16 +1,22 @@
 import React, { useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Plane, Image, Music, Gift, Utensils, Rocket } from 'lucide-react';
+import { Home, Plane, Image, Music, Gift, Utensils, Rocket, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
 
 const BottomNav = () => {
     const location = useLocation();
     const navRef = useRef(null);
 
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'admin';
+
     const navItems = [
         { to: '/', icon: Home, label: 'Home' },
-        { to: '/travel', icon: Plane, label: 'Viajes' },
-        { to: '/memories', icon: Image, label: 'Recuerdos' },
+        ...(isAdmin ? [
+            { to: '/travel', icon: Plane, label: 'Viajes' },
+            { to: '/memories', icon: Image, label: 'Recuerdos' },
+        ] : []),
         { to: '/restaurants', icon: Utensils, label: 'Comer' },
         { to: '/gifts', icon: Gift, label: 'Regalos' },
         { to: '/bucket-list', icon: Rocket, label: 'Metas' },

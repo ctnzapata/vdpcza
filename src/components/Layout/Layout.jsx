@@ -1,10 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import TopBar from './TopBar';
 
 const Layout = () => {
     return (
         <div className="min-h-screen pb-24 relative overflow-hidden bg-slate-950">
+            <TopBar />
             {/* Animated Aurora Background */}
             <div className="aurora-container">
                 <div className="aurora-blob aurora-1" />

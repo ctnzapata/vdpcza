@@ -26,7 +26,7 @@ const BottomNav = () => {
     }, [location.pathname]);
 
     return (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-lg">
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-lg">
             <div
                 ref={navRef}
                 className="glass rounded-[32px] flex items-center p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 overflow-x-auto no-scrollbar scroll-smooth"

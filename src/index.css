@@ -15,23 +15,21 @@
     }
 }
 
-@layer components {
-    .glass {
-        @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+@utility glass {
+    @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    .glass-card {
-        @apply glass rounded-[32px] overflow-hidden;
-    }
+@utility glass-card {
+    @apply glass rounded-[32px] overflow-hidden;
+}
 
-    .glass-button {
-        @apply glass flex items-center justify-center p-4 rounded-2xl active:scale-95 hover:bg-white/20 hover:border-white/30 transition-all;
-    }
+@utility glass-button {
+    @apply glass flex items-center justify-center p-4 rounded-2xl active:scale-95 hover:bg-white/20 hover:border-white/30 transition-all;
+}
 
-    .text-gradient {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-rose-400 to-indigo-400;
-    }
+@utility text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-rose-400 to-indigo-400;
 }
 
 /* Custom Background Mesh / Aurora */

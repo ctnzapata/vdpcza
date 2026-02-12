@@ -9,8 +9,9 @@ import DailyTrivia from './DailyTrivia';
 const Dashboard = () => {
     const [timeLeft, setTimeLeft] = useState({ years: 0, months: 0, days: 0, hours: 0, minutes: 0 });
     const [quote, setQuote] = useState({ text: "Eres mi lugar favorito en el mundo.", author: "vdpcza" });
+    const [showCounter, setShowCounter] = useState(false);
 
-    const startDateStr = import.meta.env.VITE_KEY_DATE || '14/02/2024';
+    const startDateStr = import.meta.env.VITE_KEY_DATE || '18/06/2024';
 
     useEffect(() => {
         const calculateTime = () => {
@@ -48,7 +49,7 @@ const Dashboard = () => {
         fetchQuote();
 
         return () => clearInterval(timer);
-    }, []);
+    }, [startDateStr]);
 
     return (
         <div className="space-y-8 pb-32">
@@ -79,23 +80,48 @@ const Dashboard = () => {
             <motion.section
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="glass-card p-8 relative"
+                className="glass-card p-8 relative overflow-hidden"
             >
                 <div className="absolute top-4 left-4 text-white/5">
                     <Clock size={80} strokeWidth={1} />
                 </div>
 
-                <h2 className="text-[10px] uppercase tracking-[.3em] text-slate-400 mb-8 font-bold text-center">Tiempo Juntos</h2>
-
-                <div className="grid grid-cols-3 gap-6 mb-8 relative z-10">
-                    <CounterItem value={timeLeft.years} label="Años" />
-                    <CounterItem value={timeLeft.months} label="Meses" />
-                    <CounterItem value={timeLeft.days} label="Días" />
-                </div>
-                <div className="flex justify-center gap-12 relative z-10 border-t border-white/5 pt-6">
-                    <CounterItem value={timeLeft.hours} label="Horas" small />
-                    <CounterItem value={timeLeft.minutes} label="Minutos" small />
-                </div>
+                {!showCounter ? (
+                    <div className="text-center py-4 relative z-10">
+                        <p className="text-white font-serif italic text-lg leading-relaxed mb-6">
+                            "No me gusta contar el tiempo cuando estoy contigo, sin embargo, para ver cuánto hemos vivido felices..."
+                        </p>
+                        <button
+                            onClick={() => setShowCounter(true)}
+                            className="px-6 py-3 glass bg-rose-500/20 border-rose-500/30 text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-[.3em] hover:bg-rose-500/30 transition-all active:scale-95"
+                        >
+                            Pulsa aquí ✨
+                        </button>
+                    </div>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="relative z-10"
+                    >
+                        <h2 className="text-[10px] uppercase tracking-[.3em] text-slate-400 mb-8 font-bold text-center">Nuestro Tiempo Juntos</h2>
+                        <div className="grid grid-cols-3 gap-6 mb-8">
+                            <CounterItem value={timeLeft.years} label="Años" />
+                            <CounterItem value={timeLeft.months} label="Meses" />
+                            <CounterItem value={timeLeft.days} label="Días" />
+                        </div>
+                        <div className="flex justify-center gap-12 border-t border-white/5 pt-6">
+                            <CounterItem value={timeLeft.hours} label="Horas" small />
+                            <CounterItem value={timeLeft.minutes} label="Minutos" small />
+                        </div>
+                        <button
+                            onClick={() => setShowCounter(false)}
+                            className="mt-8 w-full text-[8px] text-slate-600 uppercase tracking-widest hover:text-rose-400 transition-colors"
+                        >
+                            Ocultar detalle
+                        </button>
+                    </motion.div>
+                )}
             </motion.section>
 
             {/* Activity Quests */}

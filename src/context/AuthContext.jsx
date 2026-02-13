@@ -34,19 +34,36 @@ export const AuthProvider = ({ children }) => {
                     alert('Acceso restringido: Este correo no está en la lista de invitados.');
                     setUser(null);
                 } else {
-                    // Use maybeSingle() to avoid errors if the profile doesn't exist yet
-                    const { data: profile, error: profileError } = await supabase
+                    // 1. Try to fetch the profile
+                    let { data: profile, error: profileError } = await supabase
                         .from('profiles')
                         .select('role')
                         .eq('id', session.user.id)
                         .maybeSingle();
 
-                    if (profileError) console.error("Error fetching profile:", profileError);
+                    // 2. Hardcoded fallback for the owner (You)
+                    const isAdminByEmail = session.user.email?.toLowerCase() === 'ctnzapata@gmail.com';
 
-                    const finalRole = profile?.role || 'user';
-                    console.log("Sistema de Seguridad - Usuario detectado:", session.user.email);
-                    console.log("Sistema de Seguridad - Rol asignado:", finalRole);
-                    console.log("ID de usuario:", session.user.id);
+                    // 3. If profile is missing, try to create it automatically
+                    if (!profile && !profileError) {
+                        const { data: newProfile } = await supabase
+                            .from('profiles')
+                            .insert([
+                                {
+                                    id: session.user.id,
+                                    email: session.user.email,
+                                    role: isAdminByEmail ? 'admin' : 'user'
+                                }
+                            ])
+                            .select()
+                            .maybeSingle();
+                        profile = newProfile;
+                    }
+
+                    const finalRole = isAdminByEmail ? 'admin' : (profile?.role || 'user');
+
+                    console.log("Sistema de Seguridad - Usuario:", session.user.email);
+                    console.log("Sistema de Seguridad - Rol:", finalRole);
 
                     setUser({
                         ...session.user,

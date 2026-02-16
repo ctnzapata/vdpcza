@@ -18,7 +18,19 @@ const Dashboard = () => {
 
     const startDateStr = import.meta.env.VITE_KEY_DATE || '18/06/2024';
 
+    const [newGiftNotification, setNewGiftNotification] = useState(false);
+
     useEffect(() => {
+        const checkGifts = async () => {
+            const { data } = await supabase.from('gifts').select('id');
+            if (data) {
+                const unseen = data.filter(g => !localStorage.getItem(`vdpcza_seen_${g.id}`));
+                setNewGiftNotification(unseen.length);
+            }
+        };
+
+        checkGifts();
+
         const calculateTime = () => {
             const [day, month, year] = startDateStr.split('/').map(Number);
             const start = new Date(year, month - 1, day);
@@ -55,7 +67,7 @@ const Dashboard = () => {
         fetchQuote();
 
         return () => clearInterval(timer);
-    }, [startDateStr]);
+    }, [startDateStr, isAdmin]); // Re-run if admin status changes
 
     return (
         <div className="space-y-8 pb-32">
@@ -96,8 +108,28 @@ const Dashboard = () => {
                 </AnimatePresence>
             </motion.header>
 
-            {/* Live Status */}
-            <MoodTracker />
+            {/* Activity Quests */}
+            {newGiftNotification > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="glass-card p-4 border-rose-500/30 flex items-center justify-between gap-4 bg-rose-500/10 mb-8"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 glass rounded-full bg-rose-500 text-white">
+                            <img src="/gift-icon.gif" alt="" className="w-6 h-6 hidden" />
+                            <Sparkles className="w-5 h-5 animate-pulse" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-rose-300">¡Sorpresa!</h3>
+                            <p className="text-[10px] text-slate-300">Tienes {newGiftNotification} regalo{newGiftNotification > 1 ? 's' : ''} esperando ser abierto{newGiftNotification > 1 ? 's' : ''}.</p>
+                        </div>
+                    </div>
+                    <a href="/gifts" className="px-4 py-2 bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-600 transition-colors">
+                        Ver
+                    </a>
+                </motion.div>
+            )}
 
             {/* Counter Section - Redesigned */}
             <motion.section

@@ -30,15 +30,19 @@ const Login = () => {
         if (loginMode === 'magic_link') {
             const { error } = await signIn(email);
             if (error) {
+                console.error("Magic Link Error:", error);
                 alert('Error al enviar el link mágico: ' + error.message);
             } else {
                 setSent(true);
             }
         } else {
+            console.log("Attempting password login for:", email);
             const { error } = await signInWithPassword(email, password);
             if (error) {
-                console.error("Login Error:", error);
+                console.error("Login Error Full Object:", error);
                 alert('Error al iniciar sesión: ' + (error.message === 'Invalid login credentials' ? 'Contraseña incorrecta o usuario no registrado.' : error.message));
+            } else {
+                console.log("Login successful!");
             }
         }
         setLoading(false);

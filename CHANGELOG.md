@@ -29,5 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Database Hardening**: Created `supabase/best_practices.sql` with recommended RLS policies and Index optimizations.
 - **Error Handling**: Improved error logging in `Dashboard` and `Memories` components to prevent silent failures.
 
+### Design
+- **Frontend Redesign**: Enhanced "Nebula Glass" aesthetic with new color variables, advanced aurora animations, and refined glassmorphism effects.
+- **Typography**: Updated font hierarchy using `Playfair Display` for headings and `Outfit` for body text.
+- **Responsive Layout**: Improved responsiveness with a mobile-first approach that expands gracefully to desktop (`max-w-5xl`).
+- **Branding**: Implemented new SVG logo and favicon with "VC" monogram and neon effects.
+- **Navigation**: Refined `BottomNav` and `TopBar` for better usability across devices.
+
 ### Performance
 - **Asset Optimization**: Localized `noise.svg` background texture to reduce external HTTP requests and improve LCP.

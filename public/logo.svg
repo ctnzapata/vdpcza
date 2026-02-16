@@ -1,0 +1,27 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="neon-g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#fb7185"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" stroke="url(#g1)" stroke-width="12" filter="url(#neon-g)" opacity="0.9"/>
+  
+  <!-- Monogram VC -->
+  <g filter="url(#neon-g)">
+    <!-- V -->
+    <path d="M136 156 L216 356 L296 156" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- C -->
+    <path d="M386 196 C386 146 336 126 296 126 C226 126 176 196 176 256 C176 326 226 386 296 386 C346 386 386 346 386 306" stroke="#ffffff" stroke-width="32" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- Heart Accent -->
+  <path d="M390 230 C390 215 400 205 415 205 C430 205 440 215 440 230 C440 250 390 280 390 280 C390 280 340 250 340 230 C340 215 350 205 365 205 C380 205 390 215 390 230 Z" fill="#f43f5e" filter="url(#neon-g)"/>
+</svg>

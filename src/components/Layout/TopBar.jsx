@@ -28,12 +28,12 @@ const TopBar = () => {
     if (!user) return null;
 
     return (
-        <div className="relative z-[50] w-full max-w-lg mx-auto px-4 pt-4">
-            <div className="glass rounded-[24px] px-4 py-2 flex items-center justify-between border border-white/10 shadow-xl">
-                {/* Logo o Nombre de la App */}
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 glass rounded-xl flex items-center justify-center border-rose-500/20">
-                        <span className="text-rose-500 font-serif font-bold text-xs">V</span>
+        <div className="relative z-[50] w-full max-w-lg md:max-w-5xl mx-auto px-4 pt-4 transition-all duration-500">
+            <div className="glass rounded-[24px] px-4 py-2 flex items-center justify-between border border-white/10 shadow-xl md:py-3 md:px-6">
+                {/* Logo */}
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.3)] bg-black/40">
+                        <img src="/logo.svg?v=2" alt="VDPCZA Logo" className="w-full h-full object-cover p-1" />
                     </div>
                 </div>
 

@@ -12,13 +12,14 @@ const Layout = () => {
                 <div className="aurora-blob aurora-1" />
                 <div className="aurora-blob aurora-2" />
                 <div className="aurora-blob aurora-3" />
+                <div className="aurora-blob aurora-4" /> {/* Deep space accent */}
             </div>
 
             {/* Subtle Grain Overlay */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('/noise.svg')] z-[1]" />
 
             {/* Main Content Area */}
-            <main className="container mx-auto px-4 py-8 relative max-w-lg">
+            <main className="container mx-auto px-4 py-8 relative max-w-lg md:max-w-5xl md:pb-8 transition-all duration-500">
                 <Outlet />
             </main>
 

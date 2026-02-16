@@ -99,49 +99,58 @@ const Dashboard = () => {
             {/* Live Status */}
             <MoodTracker />
 
-            {/* Counter Section */}
+            {/* Counter Section - Redesigned */}
             <motion.section
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="glass-card p-8 relative overflow-hidden"
+                className="glass-card p-8 relative overflow-hidden group border-rose-500/20 shadow-[0_0_30px_rgba(244,63,94,0.15)]"
             >
+                {/* Dynamic Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-indigo-500/5 opacity-50" />
+                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-rose-500/10 blur-3xl rounded-full animate-pulse" />
+
                 <div className="absolute top-4 left-4 text-white/5">
                     <Clock size={80} strokeWidth={1} />
                 </div>
 
                 {!showCounter ? (
-                    <div className="text-center py-4 relative z-10">
-                        <p className="text-white font-serif italic text-lg leading-relaxed mb-6">
-                            "No me gusta contar el tiempo cuando estoy contigo, sin embargo, para ver cuánto hemos vivido felices..."
+                    <div className="text-center py-8 relative z-10 flex flex-col items-center">
+                        <Heart className="w-12 h-12 text-rose-500 mb-6 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)] animate-bounce" />
+                        <p className="text-white font-serif italic text-xl leading-relaxed mb-8 max-w-xs">
+                            "No me gusta contar el tiempo cuando estoy contigo, pero para celebrar cada segundo a tu lado..."
                         </p>
                         <button
                             onClick={() => setShowCounter(true)}
-                            className="px-6 py-3 glass bg-rose-500/20 border-rose-500/30 text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-[.3em] hover:bg-rose-500/30 transition-all active:scale-95"
+                            className="px-8 py-4 glass-button border-rose-500/30 text-white font-bold uppercase tracking-[.2em] hover:bg-rose-500/20 hover:border-rose-500/50 hover:shadow-[0_0_20px_rgba(244,63,94,0.4)] transition-all duration-300 transform hover:-translate-y-1"
                         >
-                            Pulsa aquí ✨
+                            Ver Mágia ✨
                         </button>
                     </div>
                 ) : (
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         className="relative z-10"
                     >
-                        <h2 className="text-[10px] uppercase tracking-[.3em] text-slate-400 mb-8 font-bold text-center">Nuestro Tiempo Juntos</h2>
-                        <div className="grid grid-cols-3 gap-6 mb-8">
-                            <CounterItem value={timeLeft.years} label="Años" />
-                            <CounterItem value={timeLeft.months} label="Meses" />
-                            <CounterItem value={timeLeft.days} label="Días" />
+                        <h2 className="text-xs uppercase tracking-[.4em] text-rose-300 mb-10 font-black text-center drop-shadow-md">Nuestro Infinito</h2>
+
+                        <div className="grid grid-cols-3 gap-4 mb-8">
+                            <CounterItem value={timeLeft.years} label="Años" primary />
+                            <CounterItem value={timeLeft.months} label="Meses" primary />
+                            <CounterItem value={timeLeft.days} label="Días" primary />
                         </div>
-                        <div className="flex justify-center gap-12 border-t border-white/5 pt-6">
-                            <CounterItem value={timeLeft.hours} label="Horas" small />
-                            <CounterItem value={timeLeft.minutes} label="Minutos" small />
+
+                        <div className="flex justify-center gap-8 border-t border-white/5 pt-8 bg-white/5 rounded-2xl p-4 backdrop-blur-sm">
+                            <CounterItem value={timeLeft.hours} label="Horas" />
+                            <div className="w-px bg-white/10 h-10 self-center" />
+                            <CounterItem value={timeLeft.minutes} label="Minutos" />
                         </div>
+
                         <button
                             onClick={() => setShowCounter(false)}
-                            className="mt-8 w-full text-[8px] text-slate-600 uppercase tracking-widest hover:text-rose-400 transition-colors"
+                            className="mt-8 w-full text-[9px] text-slate-500 uppercase tracking-widest hover:text-white transition-colors"
                         >
-                            Ocultar detalle
+                            Volver al secreto
                         </button>
                     </motion.div>
                 )}
@@ -177,17 +186,17 @@ const Dashboard = () => {
     );
 };
 
-const CounterItem = ({ value, label, small }) => (
-    <div className={`text-center flex flex-col items-center ${small ? 'opacity-80' : ''}`}>
+const CounterItem = ({ value, label, primary }) => (
+    <div className="text-center flex flex-col items-center relative group">
         <motion.span
             key={value}
             initial={{ y: 5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className={`block ${small ? 'text-2xl' : 'text-4xl'} font-outfit font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]`}
+            className={`block font-outfit font-black ${primary ? 'text-5xl text-gradient drop-shadow-lg' : 'text-2xl text-white/80'}`}
         >
             {value}
         </motion.span>
-        <span className="text-[9px] text-slate-500 uppercase font-black tracking-widest mt-1">{label}</span>
+        <span className={`text-[8px] uppercase font-black tracking-[.2em] mt-2 ${primary ? 'text-rose-400' : 'text-slate-500'}`}>{label}</span>
     </div>
 );
 

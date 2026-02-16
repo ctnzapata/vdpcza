@@ -37,7 +37,8 @@ const Login = () => {
         } else {
             const { error } = await signInWithPassword(email, password);
             if (error) {
-                alert('Error al iniciar sesión: ' + error.message);
+                console.error("Login Error:", error);
+                alert('Error al iniciar sesión: ' + (error.message === 'Invalid login credentials' ? 'Contraseña incorrecta o usuario no registrado.' : error.message));
             }
         }
         setLoading(false);

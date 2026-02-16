@@ -1,40 +1,34 @@
-# Changelog
+# Changelog - vdpcza 🚀
 
-All notable changes to this project will be documented in this file.
+## [Phase 3] - 2026-02-15
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### ✨ Nuevas Funcionalidades
+- **Gestor de Viajes y Recuerdos**: Galería interactiva con soporte para álbumes y subida de archivos vinculados (Storage de Supabase).
+- **Restaurantes (CRUD)**: Sistema completo para añadir, editar y eliminar restaurantes favoritos, con un módulo interno de **opiniones y valoraciones**.
+- **Regalos**: Lista visual de ideas y regalos recibidos.
+- **Bucket List**: Lista de metas y sueños compartidos con sistema de checklist.
+- **Navegación "Universo"**: Nueva barra de navegación horizontal con diseño minimalista, iconos animados y soporte táctil fluido.
+- **Perfil de Usuario**: Página básica de perfil.
 
-## [Unreleased]
+### 🎨 Mejoras de Diseño (Nebula Glass 2.0)
+- **Fondo Aurora Dinámico**: Animaciones de fondo optimizadas con colores profundos (Rose/Indigo/Cyan).
+- **Efectos de Cristal**: Tarjetas y botones con un acabado de cristal esmerilado (`backdrop-blur`) más pulido y sombras realistas.
+- **Micro-interacciones**: Animaciones al hacer hover, click y transiciones de página suaves con `framer-motion`.
+- **Tipografía**: Implementación de fuentes `Playfair Display` para títulos elegantes y `Outfit` para textos modernos.
 
-### Added
-- **TopBar Component**: New persistent top navigation bar showing user profile, role, and logout functionality.
-- **Profile Page**: Comprehensive user profile management allowing updates to name, bio, and avatar.
-- **Role-Based Access Control (RBAC)**: secure enforcement of `admin` vs `user` roles throughout the application.
-- **Admin Dashboard**: Enhanced dashboard experience for authorized users.
-- **Password Authentication**: Added support for email/password login alongside Magic Links.
-- **Vercel Deployment**: Configuration for automated deployments via Vercel.
+### 🛠️ Correcciones y Mejoras Técnicas
+- **Autenticación Robusta**:
+    - Soporte para Login con **Magic Link** y **Contraseña**.
+    - Sistema de roles (Admin/User) para proteger secciones sensibles (Viajes, Recuerdos).
+    - Lógica de "Whitelist" para restringir el acceso solo a correos autorizados.
+- **Solución de Bugs**:
+    - Arreglado el error de pantalla blanca en rutas protegidas por falta de contexto.
+    - Corregida la superposición de la barra de navegación con los modales.
+    - Mejorado el manejo de errores en la subida de imágenes.
 
-### Changed
-- **Navigation**: Moved `Profile` access from `BottomNav` to `TopBar` for better separation of concerns.
-- **Authentication**: Improved robustness of session handling and role detection.
-- **UI/UX**: Refined "Nebula Glass" aesthetic with smoother animations and consistent styling.
+### 🔒 Seguridad
+- Implementación de `RequireAdmin` para proteger rutas de escritura crítica.
+- Validación de sesiones y redirección inteligente.
 
-### Fixed
-- **Login Issues**: Resolved race conditions in `AuthContext` causing blank screens on login.
-- **Role Detection**: Implemented fallback mechanism to ensure correct admin privileges based on email.
-- **Magic Link Redirects**: Corrected redirect URIs for deployed environments.
-
-### Security
-- **Database Hardening**: Created `supabase/best_practices.sql` with recommended RLS policies and Index optimizations.
-- **Error Handling**: Improved error logging in `Dashboard` and `Memories` components to prevent silent failures.
-
-### Design
-- **Frontend Redesign**: Enhanced "Nebula Glass" aesthetic with new color variables, advanced aurora animations, and refined glassmorphism effects.
-- **Typography**: Updated font hierarchy using `Playfair Display` for headings and `Outfit` for body text.
-- **Responsive Layout**: Improved responsiveness with a mobile-first approach that expands gracefully to desktop (`max-w-5xl`).
-- **Branding**: Implemented new SVG logo and favicon with "VC" monogram and neon effects.
-- **Navigation**: Refined `BottomNav` and `TopBar` for better usability across devices.
-
-### Performance
-- **Asset Optimization**: Localized `noise.svg` background texture to reduce external HTTP requests and improve LCP.
+---
+*Hecho con ❤️ para Vale & Cris*

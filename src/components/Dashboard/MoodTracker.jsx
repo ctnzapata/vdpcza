@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Smile, Frown, Heart, Ghost } from 'lucide-react';
+import { Smile, Heart, Frown, CloudRain } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 
 const moods = [
     { type: 'happy', icon: Smile, color: 'text-yellow-400', bg: 'bg-yellow-400/10', border: 'border-yellow-400/20', label: 'Feliz' },
-    { type: 'sad', icon: Frown, color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20', label: 'Triste' },
-    { type: 'miss_you', icon: Heart, color: 'text-rose-400', bg: 'bg-rose-400/10', border: 'border-rose-400/20', label: 'Te extraño' },
-    { type: 'ghost', icon: Ghost, color: 'text-slate-400', bg: 'bg-slate-400/10', border: 'border-slate-400/20', label: 'Ghost mode' }
+    { type: 'love', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/20', label: 'Enamorado' },
+    { type: 'angry', icon: Frown, color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20', label: 'Enojado' },
+    { type: 'miss_you', icon: CloudRain, color: 'text-indigo-400', bg: 'bg-indigo-400/10', border: 'border-indigo-400/20', label: 'Extrañándote' }
 ];
 
 const MoodTracker = () => {
@@ -53,11 +53,17 @@ const MoodTracker = () => {
 
     const updateMood = async (type) => {
         setLoading(true);
+        // Optimistic update
+        setCurrentMood({ mood: type, user_id: user.id, created_at: new Date().toISOString() });
+
         const { error } = await supabase
             .from('moods')
             .insert([{ user_id: user.id, mood: type }]);
 
-        if (error) console.error('Error updating mood:', error);
+        if (error) {
+            console.error('Error updating mood:', error);
+            // Revert if error (optional, but good practice)
+        }
         setLoading(false);
     };
 
@@ -102,12 +108,12 @@ const MoodTracker = () => {
                                 onClick={() => updateMood(m.type)}
                                 disabled={loading}
                                 className={`group flex flex-col items-center gap-2 p-4 rounded-[20px] transition-all duration-500 relative ${isSelected
-                                        ? `bg-white/10 ${m.color} border border-white/20 shadow-lg scale-105`
-                                        : 'bg-white/5 border border-white/5 text-slate-500 hover:text-slate-300 hover:border-white/10'
+                                    ? `bg-white/10 ${m.color} border border-white/20 shadow-lg scale-105`
+                                    : 'bg-white/5 border border-white/5 text-slate-500 hover:text-slate-300 hover:border-white/10'
                                     }`}
                             >
                                 <Icon size={24} className={`transition-transform duration-500 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`} />
-                                <span className={`text-[8px] uppercase font-bold tracking-widest ${isSelected ? 'opacity-100' : 'opacity-40'}`}>{m.label}</span>
+                                <span className={`hidden sm:block text-[8px] uppercase font-bold tracking-widest ${isSelected ? 'opacity-100' : 'opacity-40'}`}>{m.label}</span>
                                 {isSelected && (
                                     <motion.div
                                         layoutId="mood-glow"

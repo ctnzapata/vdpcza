@@ -12,6 +12,15 @@ const DailyTrivia = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Hardcoded challenge for special request
+        setQuestion({
+            question: "¿Cuál es mi comida favorita?",
+            options: ["Pizza", "Sushi", "Hamburguesa", "Tacos"],
+            correct_answer: "Hamburguesa"
+        });
+        setLoading(false);
+
+        /* Original logic
         const fetchQuestion = async () => {
             const { data } = await supabase.from('trivia_questions').select('*');
             if (data && data.length > 0) {
@@ -22,6 +31,7 @@ const DailyTrivia = () => {
             setLoading(false);
         };
         fetchQuestion();
+        */
     }, []);
 
     const handleAnswer = (answer) => {

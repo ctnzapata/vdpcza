@@ -15,7 +15,7 @@ const Layout = () => {
             </div>
 
             {/* Subtle Grain Overlay */}
-            <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-[1]" />
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('/noise.svg')] z-[1]" />
 
             {/* Main Content Area */}
             <main className="container mx-auto px-4 py-8 relative max-w-lg">

@@ -18,16 +18,18 @@ const Memories = () => {
     const fetchAlbums = async () => {
         setLoading(true);
         const { data, error } = await supabase.from('albums').select('*').order('created_at', { ascending: false });
+        if (error) console.error("Error fetching albums:", error);
         if (data) setAlbums(data);
         setLoading(false);
     };
 
     const fetchMemories = async (albumId) => {
-        const { data } = await supabase
+        const { data, error } = await supabase
             .from('memories')
             .select('*')
             .eq('album_id', albumId)
             .order('date', { ascending: false });
+        if (error) console.error("Error fetching memories:", error);
         if (data) setMemories(data);
     };
 

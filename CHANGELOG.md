@@ -25,5 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Role Detection**: Implemented fallback mechanism to ensure correct admin privileges based on email.
 - **Magic Link Redirects**: Corrected redirect URIs for deployed environments.
 
+### Security
+- **Database Hardening**: Created `supabase/best_practices.sql` with recommended RLS policies and Index optimizations.
+- **Error Handling**: Improved error logging in `Dashboard` and `Memories` components to prevent silent failures.
+
 ### Performance
 - **Asset Optimization**: Localized `noise.svg` background texture to reduce external HTTP requests and improve LCP.

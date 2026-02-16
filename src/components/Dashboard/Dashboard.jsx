@@ -45,7 +45,8 @@ const Dashboard = () => {
         const timer = setInterval(calculateTime, 1000 * 60);
 
         const fetchQuote = async () => {
-            const { data } = await supabase.from('quotes').select('*');
+            const { data, error } = await supabase.from('quotes').select('*');
+            if (error) console.error("Error fetching quotes:", error);
             if (data && data.length > 0) {
                 const random = data[Math.floor(Math.random() * data.length)];
                 setQuote(random);

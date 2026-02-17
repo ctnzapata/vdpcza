@@ -11,6 +11,31 @@ const moods = [
     { type: 'miss_you', icon: CloudRain, color: 'text-indigo-400', bg: 'bg-indigo-400/10', border: 'border-indigo-400/20', label: 'Extrañándote' }
 ];
 
+const PartnerMoodBox = ({ partnerMood }) => {
+    if (!partnerMood) return null;
+    const moodInfo = moods.find(m => m.type === partnerMood.mood) || moods[0];
+    const Icon = moodInfo.icon;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={`p-5 rounded-3xl flex items-center gap-4 glass-premium border border-white/10 ${moodInfo.bg} shadow-2xl relative overflow-hidden`}
+        >
+            {/* Glow effect */}
+            <div className={`absolute -right-4 -top-4 w-20 h-20 blur-3xl opacity-30 rounded-full ${moodInfo.bg}`} />
+
+            <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 ${moodInfo.color}`}>
+                <Icon size={28} />
+            </div>
+            <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-[.2em] font-bold mb-1">Tu pareja dice</p>
+                <p className="text-xl font-serif text-white tracking-wide">Hoy estoy: <span className={moodInfo.color}>{moodInfo.label.toLowerCase()}</span></p>
+            </div>
+        </motion.div>
+    );
+};
+
 const MoodTracker = () => {
     const { user } = useAuth();
     const [currentMood, setCurrentMood] = useState(null);
@@ -52,9 +77,12 @@ const MoodTracker = () => {
     }, [user]);
 
     const updateMood = async (type) => {
+        if (loading || currentMood?.mood === type) return;
+
         setLoading(true);
         // Optimistic update
-        setCurrentMood({ mood: type, user_id: user.id, created_at: new Date().toISOString() });
+        const optimisticMood = { mood: type, user_id: user.id, created_at: new Date().toISOString() };
+        setCurrentMood(optimisticMood);
 
         const { error } = await supabase
             .from('moods')
@@ -62,39 +90,13 @@ const MoodTracker = () => {
 
         if (error) {
             console.error('Error updating mood:', error);
-            // Revert if error (optional, but good practice)
         }
         setLoading(false);
     };
 
-    const PartnerMoodBox = () => {
-        if (!partnerMood) return null;
-        const moodInfo = moods.find(m => m.type === partnerMood.mood) || moods[0];
-        const Icon = moodInfo.icon;
-
-        return (
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={`p-5 rounded-3xl flex items-center gap-4 glass-premium border border-white/10 ${moodInfo.bg} shadow-2xl relative overflow-hidden`}
-            >
-                {/* Glow effect */}
-                <div className={`absolute -right-4 -top-4 w-20 h-20 blur-3xl opacity-30 rounded-full ${moodInfo.bg}`} />
-
-                <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 ${moodInfo.color}`}>
-                    <Icon size={28} />
-                </div>
-                <div>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-[.2em] font-bold mb-1">Tu pareja dice</p>
-                    <p className="text-xl font-serif text-white tracking-wide">Me siento <span className={moodInfo.color}>{moodInfo.label.toLowerCase()}</span></p>
-                </div>
-            </motion.div>
-        );
-    };
-
     return (
         <div className="space-y-6">
-            <PartnerMoodBox />
+            <PartnerMoodBox partnerMood={partnerMood} />
 
             <div className="glass-card p-6 border border-white/5 shadow-inner">
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[.25em] mb-6 px-1">¿Cómo estás hoy?</h3>
@@ -113,7 +115,7 @@ const MoodTracker = () => {
                                     }`}
                             >
                                 <Icon size={24} className={`transition-transform duration-500 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`} />
-                                <span className={`hidden sm:block text-[8px] uppercase font-bold tracking-widest ${isSelected ? 'opacity-100' : 'opacity-40'}`}>{m.label}</span>
+                                <span className={`text-[8px] uppercase font-bold tracking-widest ${isSelected ? 'opacity-100' : 'opacity-40'}`}>{m.label}</span>
                                 {isSelected && (
                                     <motion.div
                                         layoutId="mood-glow"

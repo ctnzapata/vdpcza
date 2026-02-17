@@ -108,7 +108,7 @@ const Dashboard = () => {
                 </AnimatePresence>
             </motion.header>
 
-            {/* Activity Quests */}
+            {/* Notifications */}
             {newGiftNotification > 0 && (
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -130,6 +130,9 @@ const Dashboard = () => {
                     </a>
                 </motion.div>
             )}
+
+            {/* Mood Tracker */}
+            <MoodTracker />
 
             {/* Counter Section - Redesigned */}
             <motion.section
@@ -187,6 +190,8 @@ const Dashboard = () => {
                     </motion.div>
                 )}
             </motion.section>
+
+
 
             {/* Activity Quests */}
             <DailyTrivia />

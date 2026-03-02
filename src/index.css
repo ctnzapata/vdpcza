@@ -20,8 +20,10 @@
     }
 
     body {
-        @apply bg-[#020617] text-slate-100 selection:bg-rose-500/30 selection:text-white;
+        @apply bg-[#030303] text-slate-100 selection:bg-rose-500/20 selection:text-white;
         overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     h1,
@@ -32,22 +34,21 @@
     }
 }
 
-/* --- GLASSPHISM 2.0 --- */
+/* --- BRUTAL MINIMAL GLASSPHISM --- */
 @utility glass {
-    @apply backdrop-blur-[20px] bg-white/[0.03] border border-white/[0.08];
+    @apply backdrop-blur-[40px] bg-white/[0.015] border border-white/[0.03];
     box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06),
-        inset 0 0 20px rgba(255, 255, 255, 0.02);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        0 4px 24px -1px rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @utility glass-card {
-    @apply glass rounded-[32px] overflow-hidden relative;
+    @apply glass rounded-[40px] overflow-hidden relative;
 
     &:hover {
-        @apply border-white/[0.15] bg-white/[0.06] -translate-y-1;
-        box-shadow: 0 20px 40px -5px rgba(244, 63, 94, 0.15);
+        @apply border-white/[0.06] bg-white/[0.03] -translate-y-2;
+        box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.5), 0 0 40px -10px rgba(244, 63, 94, 0.1);
     }
 }
 
@@ -56,8 +57,8 @@
 }
 
 @utility text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-rose-300 via-rose-200 to-indigo-300;
-    filter: drop-shadow(0 0 15px rgba(244, 63, 94, 0.3));
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-slate-200 to-rose-200;
+    filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.1));
 }
 
 /* --- ADVANCED AURORA ANIMATIONS --- */

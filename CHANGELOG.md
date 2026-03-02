@@ -1,5 +1,21 @@
 # Changelog - vdpcza 🚀
 
+## [Phase 5] - 2026-03-02 - "Arquitectura Limpia & Minimalismo Brutal"
+
+### ✨ Nuevas Funcionalidades
+- **Arquitectura Limpia (Clean Architecture)**: Refactorización profunda de toda la base de código separando la lógica de presentación de la lógica de negocio y datos. 
+- **Capa de Repositorios**: Se crearon múltiples clases Repository (`GiftRepository`, `TravelRepository`, `MoodRepository`, `ProfileRepository`, `MemoriesRepository`, etc.) aislando por completo las interacciones directas con Supabase de los componentes de React.
+- **Rediseño: Minimalismo Brutalista**: Transformación completa de la estética visual eliminando bordes excesivos ("AI slop") a favor de sombras masivas, padding extremo y desenfoques radicales (`backdrop-blur-[40px]`).
+- **Páginas Aisladas**: Todos los módulos base (`Gifts.jsx`, `Dashboard.jsx`, `Restaurants.jsx`, `Profile.jsx`) operan ahora sin lógica estricta de bases de datos internamente.
+- **DESIGN.md**: Creación sistemática del archivo `DESIGN.md` fungiendo como fuente de la verdad para mantener una cohesión visual consistente.
+
+### 🎨 Mejoras de Diseño
+- **Espacio y Contraste**: Se implementó una filosofía "Cosmic Solitude" incrementando drásticamente el uso de espacio vacío y limitando los ruidos visuales.
+- **Tipografía Diamante**: Reducción de textos genéricos apostando por tipografías Display enormes (Playfair Display) combinadas con micro-copias mono-espaciadas ultraseparadas.
+- **Animaciones Fluidas**: Componentes del Dashboard y menú de navegación reformulados para usar transiciones de estado más físicas y suaves con `framer-motion`.
+
+---
+
 ## [Phase 4] - 2026-02-15 - "Cartas Mágicas & Notificaciones"
 
 ### ✨ Nuevas Funcionalidades

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Clock, Gift, X, Sparkles } from 'lucide-react';
-import { supabase } from '../../supabaseClient';
+import { Lock, Clock, Gift, X, Sparkles, Heart } from 'lucide-react';
+import { TimeCapsuleRepository } from '../../repositories/TimeCapsuleRepository';
 
 const TimeCapsules = () => {
     const [capsules, setCapsules] = useState([]);
@@ -10,12 +10,8 @@ const TimeCapsules = () => {
 
     useEffect(() => {
         const fetchCapsules = async () => {
-            const { data } = await supabase
-                .from('capsules')
-                .select('*')
-                .order('unlock_date', { ascending: true });
-
-            if (data) setCapsules(data);
+            const data = await TimeCapsuleRepository.getCapsules();
+            setCapsules(data);
             setLoading(false);
         };
         fetchCapsules();

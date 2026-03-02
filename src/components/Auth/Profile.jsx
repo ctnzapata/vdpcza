@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Camera, Mail, Shield, Save, LogOut, Loader, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { supabase } from '../../supabaseClient';
+import { ProfileRepository } from '../../repositories/ProfileRepository';
 
 const Profile = () => {
     const { user, signOut } = useAuth();
@@ -23,12 +23,7 @@ const Profile = () => {
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
+            const data = await ProfileRepository.getProfile(user.id);
             if (data) setProfile(data);
         } catch (error) {
             console.error('Error fetching profile:', error);
@@ -41,16 +36,10 @@ const Profile = () => {
         e.preventDefault();
         setUpdating(true);
         try {
-            const { error } = await supabase
-                .from('profiles')
-                .update({
-                    full_name: profile.full_name,
-                    bio: profile.bio,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('id', user.id);
-
-            if (error) throw error;
+            await ProfileRepository.updateProfile(user.id, {
+                full_name: profile.full_name,
+                bio: profile.bio
+            });
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
         } catch (error) {
@@ -66,27 +55,7 @@ const Profile = () => {
             const file = event.target.files[0];
             if (!file) return;
 
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-            const filePath = `avatars/${fileName}`;
-
-            // Upload to a hypothetical 'avatars' bucket (create it in Storage first!)
-            const { error: uploadError } = await supabase.storage
-                .from('memories') // Reusing memories bucket for now to simplify
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('memories')
-                .getPublicUrl(filePath);
-
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({ avatar_url: publicUrl })
-                .eq('id', user.id);
-
-            if (updateError) throw updateError;
+            const publicUrl = await ProfileRepository.uploadAvatar(user.id, file);
             setProfile({ ...profile, avatar_url: publicUrl });
 
         } catch (error) {

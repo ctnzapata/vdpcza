@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, CheckCircle2, XCircle, HelpCircle } from 'lucide-react';
 import Confetti from 'react-confetti';
-import { supabase } from '../../supabaseClient';
+import { TriviaRepository } from '../../repositories/TriviaRepository';
 
 const DailyTrivia = () => {
     const [question, setQuestion] = useState(null);
@@ -12,26 +12,21 @@ const DailyTrivia = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Hardcoded challenge for special request
-        setQuestion({
-            question: "¿Cuál es mi comida favorita?",
-            options: ["Pizza", "Sushi", "Hamburguesa", "Tacos"],
-            correct_answer: "Hamburguesa"
-        });
-        setLoading(false);
-
-        /* Original logic
         const fetchQuestion = async () => {
-            const { data } = await supabase.from('trivia_questions').select('*');
-            if (data && data.length > 0) {
-                const today = new Date().toDateString();
-                const index = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % data.length;
-                setQuestion(data[index]);
+            const fetchedQ = await TriviaRepository.getDailyQuestion();
+            if (fetchedQ) {
+                setQuestion(fetchedQ);
+            } else {
+                // Fallback hardcoded if DB fails or empty
+                setQuestion({
+                    question: "¿Cuál es mi comida favorita?",
+                    options: ["Pizza", "Sushi", "Hamburguesa", "Tacos"],
+                    correct_answer: "Hamburguesa"
+                });
             }
             setLoading(false);
         };
         fetchQuestion();
-        */
     }, []);
 
     const handleAnswer = (answer) => {
@@ -54,17 +49,17 @@ const DailyTrivia = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-card p-6 border border-white/10 shadow-2xl relative overflow-hidden"
+                className="glass-card p-10 border-none relative overflow-hidden group"
             >
                 {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 blur-3xl -z-10" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 blur-[50px] -z-10 group-hover:bg-rose-500/10 transition-colors duration-1000" />
 
-                <div className="flex items-center gap-2 text-rose-400 mb-4">
-                    <HelpCircle size={20} className="animate-pulse" />
-                    <h3 className="font-bold text-[10px] uppercase tracking-[.25em]">Reto de Pareja</h3>
+                <div className="flex items-center gap-3 text-rose-500/40 mb-8">
+                    <HelpCircle size={18} className="animate-pulse" />
+                    <h3 className="font-bold text-[9px] uppercase tracking-[.4em] text-white/30">Reto de Pareja</h3>
                 </div>
 
-                <p className="text-xl font-serif text-white leading-tight mb-6 tracking-wide">
+                <p className="text-2xl font-serif text-white/90 leading-snug mb-10 tracking-wide">
                     {question.question}
                 </p>
 
@@ -73,18 +68,18 @@ const DailyTrivia = () => {
                         const isSelected = selectedAnswer === opt;
                         const isCorrectOpt = opt === question.correct_answer;
 
-                        let style = 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:border-white/10';
+                        let style = 'bg-white/[0.02] border-none text-white/40 hover:bg-white/[0.05] hover:text-white/80';
                         let Icon = null;
 
                         if (selectedAnswer) {
                             if (isCorrectOpt) {
-                                style = 'bg-green-500/20 border-green-500/30 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.2)]';
+                                style = 'bg-green-500/10 border-none text-green-400 font-bold';
                                 Icon = CheckCircle2;
                             } else if (isSelected) {
-                                style = 'bg-red-500/20 border-red-500/30 text-red-400';
+                                style = 'bg-rose-500/10 border-none text-rose-400';
                                 Icon = XCircle;
                             } else {
-                                style = 'bg-white/5 border-white/5 text-slate-600 opacity-50';
+                                style = 'bg-transparent border-none text-white/20 opacity-50';
                             }
                         }
 
@@ -93,10 +88,10 @@ const DailyTrivia = () => {
                                 key={i}
                                 disabled={!!selectedAnswer}
                                 onClick={() => handleAnswer(opt)}
-                                className={`w-full p-4 rounded-2xl text-left text-sm font-medium transition-all duration-300 border flex justify-between items-center ${style}`}
+                                className={`w-full p-5 rounded-[20px] text-left text-sm transition-all duration-300 flex justify-between items-center ${style}`}
                             >
                                 <span className="tracking-wide">{opt}</span>
-                                {Icon && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}><Icon size={18} /></motion.div>}
+                                {Icon && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}><Icon size={20} strokeWidth={1.5} /></motion.div>}
                             </button>
                         );
                     })}
@@ -107,10 +102,10 @@ const DailyTrivia = () => {
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className="text-center mt-6"
+                            className="text-center mt-8"
                         >
-                            <p className={`text-[10px] font-bold uppercase tracking-[.3em] ${isCorrect ? 'text-green-400' : 'text-rose-400 opacity-80'}`}>
-                                {isCorrect ? '✨ ¡Nivel Experto! ✨' : '💔 ¡Casi! ¡Recuérdalo! 💔'}
+                            <p className={`text-[9px] font-black uppercase tracking-[.4em] ${isCorrect ? 'text-green-500/80' : 'text-rose-500/50'}`}>
+                                {isCorrect ? '✨ Conexión Perfecta ✨' : 'Sigue intentándolo, mi amor'}
                             </p>
                         </motion.div>
                     )}

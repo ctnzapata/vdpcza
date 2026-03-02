@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CloudUpload, Loader2, Image as ImageIcon, Plus, FolderPlus, ChevronLeft, Folder } from 'lucide-react';
-import { supabase } from '../../supabaseClient';
+import { MemoriesRepository } from '../../repositories/MemoriesRepository';
 import TimeCapsules from './TimeCapsules';
 
 const Memories = () => {
@@ -17,20 +17,14 @@ const Memories = () => {
 
     const fetchAlbums = async () => {
         setLoading(true);
-        const { data, error } = await supabase.from('albums').select('*').order('created_at', { ascending: false });
-        if (error) console.error("Error fetching albums:", error);
-        if (data) setAlbums(data);
+        const data = await MemoriesRepository.getAlbums();
+        setAlbums(data);
         setLoading(false);
     };
 
     const fetchMemories = async (albumId) => {
-        const { data, error } = await supabase
-            .from('memories')
-            .select('*')
-            .eq('album_id', albumId)
-            .order('date', { ascending: false });
-        if (error) console.error("Error fetching memories:", error);
-        if (data) setMemories(data);
+        const data = await MemoriesRepository.getMemoriesByAlbum(albumId);
+        setMemories(data);
     };
 
     useEffect(() => {
@@ -49,16 +43,14 @@ const Memories = () => {
         e.preventDefault();
         if (!newAlbumName.trim()) return;
 
-        const { data, error } = await supabase
-            .from('albums')
-            .insert([{ name: newAlbumName }])
-            .select();
-
-        if (!error && data) {
-            setAlbums([data[0], ...albums]);
-            setNewAlbumName('');
-            setShowNewAlbumModal(false);
-        } else {
+        try {
+            const newAlbum = await MemoriesRepository.createAlbum(newAlbumName);
+            if (newAlbum) {
+                setAlbums([newAlbum, ...albums]);
+                setNewAlbumName('');
+                setShowNewAlbumModal(false);
+            }
+        } catch (error) {
             alert('Error al crear álbum: ' + error.message);
         }
     };
@@ -75,40 +67,22 @@ const Memories = () => {
             const fileName = `${selectedAlbum.id}/${Math.random()}.${fileExt}`;
             const filePath = `${fileName}`;
 
-            // Subir a Storage
-            const { error: uploadError } = await supabase.storage
-                .from('memories')
-                .upload(filePath, file);
+            // Subir a Storage y obtener URL
+            const publicUrl = await MemoriesRepository.uploadMemoryFile(filePath, file);
 
-            if (uploadError) throw uploadError;
+            // Guardar en DB
+            await MemoriesRepository.insertMemoryMetadata(publicUrl, selectedAlbum.id);
 
-            // Obtener URL pública
-            const { data: { publicUrl } } = supabase.storage
-                .from('memories')
-                .getPublicUrl(filePath);
-
-            // Guardar en Base de Datos vinculando al álbum
-            const { error: dbError } = await supabase
-                .from('memories')
-                .insert([{
-                    image_url: publicUrl,
-                    date: new Date().toISOString(),
-                    description: '',
-                    album_id: selectedAlbum.id
-                }]);
-
-            if (dbError) throw dbError;
-
-            // Si el álbum no tiene portada, usar esta primera foto
+            // Actualizar portada si es la primera
             if (!selectedAlbum.cover_image_url) {
-                await supabase.from('albums').update({ cover_image_url: publicUrl }).eq('id', selectedAlbum.id);
+                await MemoriesRepository.updateAlbumCover(selectedAlbum.id, publicUrl);
                 fetchAlbums();
             }
 
             await fetchMemories(selectedAlbum.id);
         } catch (error) {
             console.error('Error uploading memory:', error);
-            alert('Error al subir la imagen: ' + error.message + '\n\nIMPORTANTE: Asegúrate de que el bucket "memories" existe en tu Supabase Panel.');
+            alert('Error al subir la imagen: ' + error.message + '\n\nIMPORTANTE: Asegúrate de que el bucket "memories" existe en tu Supabase.');
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';

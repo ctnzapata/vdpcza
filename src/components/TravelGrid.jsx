@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { TravelRepository } from '../repositories/TravelRepository';
 import TravelCard from './TravelCard';
 import { Loader } from 'lucide-react';
 
@@ -9,13 +9,8 @@ const TravelGrid = () => {
 
     const fetchTravels = async () => {
         try {
-            const { data, error } = await supabase
-                .from('travels')
-                .select('*')
-                .order('sort_order', { ascending: true });
-
-            if (error) throw error;
-            setTravels(data || []);
+            const data = await TravelRepository.getTravels();
+            setTravels(data);
         } catch (error) {
             console.error('Error fetching travels:', error.message);
         } finally {
@@ -27,10 +22,7 @@ const TravelGrid = () => {
         fetchTravels();
 
         // Subscribe to changes for real-time updates (optional but nice)
-        const subscription = supabase
-            .channel('public:travels')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'travels' }, fetchTravels)
-            .subscribe();
+        const subscription = TravelRepository.subscribeToTravels(fetchTravels);
 
         return () => {
             subscription.unsubscribe();

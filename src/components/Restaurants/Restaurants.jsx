@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Utensils, Star, MapPin, Plus, Trash2, MessageSquare, ChevronRight, X, Edit2 } from 'lucide-react';
-import { supabase } from '../../supabaseClient';
+import { RestaurantRepository } from '../../repositories/RestaurantRepository';
 
 const Restaurants = () => {
     const [restaurants, setRestaurants] = useState([]);
@@ -12,8 +12,8 @@ const Restaurants = () => {
     const [newRes, setNewRes] = useState({ name: '', cuisine: '', location: '', image_url: '' });
 
     const fetchRestaurants = async () => {
-        const { data } = await supabase.from('restaurants').select('*').order('created_at', { ascending: false });
-        if (data) setRestaurants(data);
+        const data = await RestaurantRepository.getRestaurants();
+        setRestaurants(data);
         setLoading(false);
     };
 
@@ -23,21 +23,29 @@ const Restaurants = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
-        if (editingRes) {
-            await supabase.from('restaurants').update(newRes).eq('id', editingRes.id);
-        } else {
-            await supabase.from('restaurants').insert([newRes]);
+        try {
+            if (editingRes) {
+                await RestaurantRepository.updateRestaurant(editingRes.id, newRes);
+            } else {
+                await RestaurantRepository.createRestaurant(newRes);
+            }
+            setShowModal(false);
+            setEditingRes(null);
+            setNewRes({ name: '', cuisine: '', location: '', image_url: '' });
+            fetchRestaurants();
+        } catch (error) {
+            alert("Error: " + error.message);
         }
-        setShowModal(false);
-        setEditingRes(null);
-        setNewRes({ name: '', cuisine: '', location: '', image_url: '' });
-        fetchRestaurants();
     };
 
     const deleteRes = async (id) => {
         if (window.confirm('¿Eliminar este restaurante?')) {
-            await supabase.from('restaurants').delete().eq('id', id);
-            fetchRestaurants();
+            try {
+                await RestaurantRepository.deleteRestaurant(id);
+                fetchRestaurants();
+            } catch (error) {
+                alert("Error al eliminar: " + error.message);
+            }
         }
     };
 
@@ -151,8 +159,8 @@ const ReviewsModal = ({ restaurant, onClose }) => {
     const [loading, setLoading] = useState(true);
 
     const fetchReviews = async () => {
-        const { data } = await supabase.from('restaurant_reviews').select('*').eq('restaurant_id', restaurant.id).order('created_at', { ascending: false });
-        if (data) setReviews(data);
+        const data = await RestaurantRepository.getReviews(restaurant.id);
+        setReviews(data);
         setLoading(false);
     };
 
@@ -162,16 +170,22 @@ const ReviewsModal = ({ restaurant, onClose }) => {
 
     const handleAddReview = async (e) => {
         e.preventDefault();
-        const { error } = await supabase.from('restaurant_reviews').insert([{ ...newReview, restaurant_id: restaurant.id }]);
-        if (!error) {
+        try {
+            await RestaurantRepository.addReview({ ...newReview, restaurant_id: restaurant.id });
             setNewReview({ rating: 5, comment: '' });
             fetchReviews();
+        } catch (error) {
+            alert("Error al añadir opinión: " + error.message);
         }
     };
 
     const deleteReview = async (id) => {
-        await supabase.from('restaurant_reviews').delete().eq('id', id);
-        fetchReviews();
+        try {
+            await RestaurantRepository.deleteReview(id);
+            fetchReviews();
+        } catch (error) {
+            alert("Error al eliminar opinión: " + error.message);
+        }
     };
 
     return (

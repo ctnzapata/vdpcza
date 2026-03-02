@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, CheckCircle2, Circle, Plus, Trash2, Rocket } from 'lucide-react';
-import { supabase } from '../../supabaseClient';
+import { BucketListRepository } from '../../repositories/BucketListRepository';
 
 const BucketList = () => {
     const [items, setItems] = useState([]);
@@ -10,8 +10,8 @@ const BucketList = () => {
     const [newItem, setNewItem] = useState({ title: '', description: '' });
 
     const fetchItems = async () => {
-        const { data } = await supabase.from('bucket_list').select('*').order('created_at', { ascending: false });
-        if (data) setItems(data);
+        const data = await BucketListRepository.getItems();
+        setItems(data);
         setLoading(false);
     };
 
@@ -21,8 +21,8 @@ const BucketList = () => {
 
     const handleAdd = async (e) => {
         e.preventDefault();
-        const { error } = await supabase.from('bucket_list').insert([newItem]);
-        if (!error) {
+        const success = await BucketListRepository.createItem(newItem);
+        if (success) {
             setShowAdd(false);
             setNewItem({ title: '', description: '' });
             fetchItems();
@@ -30,13 +30,13 @@ const BucketList = () => {
     };
 
     const toggleComplete = async (item) => {
-        const { error } = await supabase.from('bucket_list').update({ is_completed: !item.is_completed }).eq('id', item.id);
-        if (!error) fetchItems();
+        const success = await BucketListRepository.updateStatus(item.id, !item.is_completed);
+        if (success) fetchItems();
     };
 
     const deleteItem = async (id) => {
-        await supabase.from('bucket_list').delete().eq('id', id);
-        fetchItems();
+        const success = await BucketListRepository.deleteItem(id);
+        if (success) fetchItems();
     };
 
     return (

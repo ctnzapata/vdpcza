@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, Unlock, Lock } from 'lucide-react';
-import { supabase } from '../supabaseClient';
+import { TravelRepository } from '../repositories/TravelRepository';
 
 const AdminPanel = ({ onClose }) => {
     const [travels, setTravels] = useState([]);
@@ -18,28 +18,35 @@ const AdminPanel = ({ onClose }) => {
     }, []);
 
     const fetchTravels = async () => {
-        const { data } = await supabase.from('travels').select('*').order('sort_order', { ascending: true });
-        setTravels(data || []);
+        try {
+            const data = await TravelRepository.getTravels();
+            setTravels(data);
+        } catch (error) {
+            console.error(error.message);
+        }
     };
 
     const handleCreate = async (e) => {
         e.preventDefault();
-        const { error } = await supabase.from('travels').insert([{
-            ...newTravel,
-            sort_order: travels.length
-        }]);
-
-        if (!error) {
+        try {
+            await TravelRepository.createTravel({
+                ...newTravel,
+                sort_order: travels.length
+            });
             setNewTravel({ title: '', destination: '', date: '', image_url: '', unlocked: false });
             fetchTravels();
-        } else {
+        } catch (error) {
             alert('Error creating travel: ' + error.message);
         }
     };
 
     const toggleLock = async (id, currentStatus) => {
-        const { error } = await supabase.from('travels').update({ unlocked: !currentStatus }).eq('id', id);
-        if (!error) fetchTravels();
+        try {
+            await TravelRepository.toggleTravelLock(id, currentStatus);
+            fetchTravels();
+        } catch (error) {
+            console.error('Error toggling lock:', error.message);
+        }
     };
 
     return (

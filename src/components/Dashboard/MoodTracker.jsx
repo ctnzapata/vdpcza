@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smile, Heart, Frown, CloudRain } from 'lucide-react';
-import { supabase } from '../../supabaseClient';
+import { MoodRepository } from '../../repositories/MoodRepository';
 import { useAuth } from '../../context/AuthContext';
 
 const moods = [
@@ -20,17 +20,14 @@ const PartnerMoodBox = ({ partnerMood }) => {
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`p-5 rounded-3xl flex items-center gap-4 glass-premium border border-white/10 ${moodInfo.bg} shadow-2xl relative overflow-hidden`}
+            className={`p-6 rounded-[32px] flex items-center gap-5 glass border-none shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden group`}
         >
-            {/* Glow effect */}
-            <div className={`absolute -right-4 -top-4 w-20 h-20 blur-3xl opacity-30 rounded-full ${moodInfo.bg}`} />
-
-            <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 ${moodInfo.color}`}>
+            <div className={`p-4 rounded-[24px] bg-white/[0.02] ${moodInfo.color} transition-transform group-hover:scale-105`}>
                 <Icon size={28} />
             </div>
             <div>
-                <p className="text-[10px] text-slate-400 uppercase tracking-[.2em] font-bold mb-1">Tu pareja dice</p>
-                <p className="text-xl font-serif text-white tracking-wide">Hoy estoy: <span className={moodInfo.color}>{moodInfo.label.toLowerCase()}</span></p>
+                <p className="text-[9px] text-white/30 uppercase tracking-[.3em] font-black mb-2">Tu pareja dice</p>
+                <p className="text-2xl font-serif text-white/90 tracking-wide font-medium">Estoy <span className={`${moodInfo.color} italic font-bold`}>{moodInfo.label.toLowerCase()}</span></p>
             </div>
         </motion.div>
     );
@@ -46,13 +43,8 @@ const MoodTracker = () => {
         if (!user) return;
 
         const fetchMoods = async () => {
-            const { data } = await supabase
-                .from('moods')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(20);
-
-            if (data) {
+            const data = await MoodRepository.getLatestMoods();
+            if (data.length > 0) {
                 const myLatest = data.find(m => m.user_id === user.id);
                 const partnerLatest = data.find(m => m.user_id !== user.id);
                 if (myLatest) setCurrentMood(myLatest);
@@ -62,16 +54,13 @@ const MoodTracker = () => {
 
         fetchMoods();
 
-        const subscription = supabase
-            .channel('moods_realtime')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'moods' }, payload => {
-                if (payload.new.user_id === user.id) {
-                    setCurrentMood(payload.new);
-                } else {
-                    setPartnerMood(payload.new);
-                }
-            })
-            .subscribe();
+        const subscription = MoodRepository.subscribeToMoods(user.id, (newMood) => {
+            if (newMood.user_id === user.id) {
+                setCurrentMood(newMood);
+            } else {
+                setPartnerMood(newMood);
+            }
+        });
 
         return () => subscription.unsubscribe();
     }, [user]);
@@ -84,23 +73,21 @@ const MoodTracker = () => {
         const optimisticMood = { mood: type, user_id: user.id, created_at: new Date().toISOString() };
         setCurrentMood(optimisticMood);
 
-        const { error } = await supabase
-            .from('moods')
-            .insert([{ user_id: user.id, mood: type }]);
-
-        if (error) {
-            console.error('Error updating mood:', error);
+        try {
+            await MoodRepository.insertMood(user.id, type);
+        } catch (error) {
+            console.error('Error updating mood:', error.message);
         }
         setLoading(false);
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-12">
             <PartnerMoodBox partnerMood={partnerMood} />
 
-            <div className="glass-card p-6 border border-white/5 shadow-inner">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[.25em] mb-6 px-1">¿Cómo estás hoy?</h3>
-                <div className="grid grid-cols-4 gap-3">
+            <div className="px-2">
+                <h3 className="text-[9px] font-black text-white/30 uppercase tracking-[.4em] mb-8 text-center text-center">¿Cómo te sientes?</h3>
+                <div className="grid grid-cols-4 gap-2">
                     {moods.map(m => {
                         const Icon = m.icon;
                         const isSelected = currentMood?.mood === m.type;
@@ -109,19 +96,13 @@ const MoodTracker = () => {
                                 key={m.type}
                                 onClick={() => updateMood(m.type)}
                                 disabled={loading}
-                                className={`group flex flex-col items-center gap-2 p-4 rounded-[20px] transition-all duration-500 relative ${isSelected
-                                    ? `bg-white/10 ${m.color} border border-white/20 shadow-lg scale-105`
-                                    : 'bg-white/5 border border-white/5 text-slate-500 hover:text-slate-300 hover:border-white/10'
+                                className={`group flex flex-col items-center gap-3 p-4 rounded-[24px] transition-all duration-300 relative ${isSelected
+                                    ? `bg-white/[0.04] ${m.color} scale-105`
+                                    : 'bg-transparent text-white/20 hover:text-white/60 hover:bg-white/[0.02]'
                                     }`}
                             >
-                                <Icon size={24} className={`transition-transform duration-500 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`} />
-                                <span className={`text-[8px] uppercase font-bold tracking-widest ${isSelected ? 'opacity-100' : 'opacity-40'}`}>{m.label}</span>
-                                {isSelected && (
-                                    <motion.div
-                                        layoutId="mood-glow"
-                                        className={`absolute inset-0 rounded-[20px] blur-md -z-10 opacity-30 ${m.bg}`}
-                                    />
-                                )}
+                                <Icon size={24} className={`transition-all duration-500 stroke-[1.5] ${isSelected ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110 group-hover:stroke-2'}`} />
+                                <span className={`text-[8px] uppercase font-black tracking-widest transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>{m.label}</span>
                             </button>
                         );
                     })}

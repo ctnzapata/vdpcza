@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gift, Lock, Unlock, Sparkles, Mail, Plus, Pencil, Trash2, X, Save } from 'lucide-react';
-import { supabase } from '../../supabaseClient';
+import { GiftRepository } from '../../repositories/GiftRepository';
 import { useAuth } from '../../context/AuthContext';
 
 const Gifts = () => {
@@ -13,8 +13,8 @@ const Gifts = () => {
     const [editingGift, setEditingGift] = useState(null); // For Add/Edit modal
 
     const fetchGifts = async () => {
-        const { data } = await supabase.from('gifts').select('*').order('created_at', { ascending: false });
-        if (data) setGifts(data);
+        const data = await GiftRepository.getGifts();
+        setGifts(data);
         setLoading(false);
     };
 
@@ -40,19 +40,24 @@ const Gifts = () => {
         e.stopPropagation();
         if (!isAdmin) return;
 
-        const { error } = await supabase
-            .from('gifts')
-            .update({ is_received: !gift.is_received })
-            .eq('id', gift.id);
-
-        if (!error) fetchGifts();
+        try {
+            await GiftRepository.toggleLock(gift.id, gift.is_received);
+            fetchGifts();
+        } catch (error) {
+            alert('Error toggling lock: ' + error.message);
+        }
     };
 
     const handleDelete = async (e, id) => {
         e.stopPropagation();
         if (!confirm('¿Seguro que quieres borrar este sobre?')) return;
-        const { error } = await supabase.from('gifts').delete().eq('id', id);
-        if (!error) fetchGifts();
+
+        try {
+            await GiftRepository.deleteGift(id);
+            fetchGifts();
+        } catch (error) {
+            alert('Error deleting gift: ' + error.message);
+        }
     };
 
     const handleEditClick = (e, gift) => {
@@ -65,16 +70,20 @@ const Gifts = () => {
         const giftData = {
             title: editingGift.title,
             description: editingGift.description,
-            is_received: editingGift.is_received ?? false // Default locked
+            is_received: editingGift.is_received ?? false
         };
 
-        if (editingGift.id) {
-            await supabase.from('gifts').update(giftData).eq('id', editingGift.id);
-        } else {
-            await supabase.from('gifts').insert([giftData]);
+        try {
+            if (editingGift.id) {
+                await GiftRepository.updateGift(editingGift.id, giftData);
+            } else {
+                await GiftRepository.createGift(giftData);
+            }
+            setEditingGift(null);
+            fetchGifts();
+        } catch (error) {
+            alert('Error saving gift: ' + error.message);
         }
-        setEditingGift(null);
-        fetchGifts();
     };
 
     return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, LogOut, Shield, Settings, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { supabase } from '../../supabaseClient';
+import { ProfileRepository } from '../../repositories/ProfileRepository';
 import { Link } from 'react-router-dom';
 
 const TopBar = () => {
@@ -17,19 +17,15 @@ const TopBar = () => {
     }, [user]);
 
     const fetchProfile = async () => {
-        const { data } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .maybeSingle();
+        const data = await ProfileRepository.getProfile(user.id);
         setProfile(data);
     };
 
     if (!user) return null;
 
     return (
-        <div className="relative z-[50] w-full max-w-lg md:max-w-5xl mx-auto px-4 pt-4 transition-all duration-500">
-            <div className="glass rounded-[24px] px-4 py-2 flex items-center justify-between border border-white/10 shadow-xl md:py-3 md:px-6">
+        <div className="relative z-[50] w-full max-w-lg md:max-w-5xl mx-auto px-6 pt-6 transition-all duration-500">
+            <div className="glass rounded-[32px] px-6 py-3 flex items-center justify-between border-none shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] md:py-4 md:px-8">
                 {/* Logo */}
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.3)] bg-black/40">
@@ -42,9 +38,9 @@ const TopBar = () => {
                     <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsOpen(!isOpen)}
-                        className="flex items-center gap-3 p-1 pr-3 glass rounded-full border-white/5 hover:bg-white/5 transition-all"
+                        className="flex items-center gap-4 p-1.5 pr-4 glass rounded-full border-none hover:bg-white/[0.05] transition-all"
                     >
-                        <div className="w-8 h-8 rounded-full overflow-hidden border border-rose-500/30 glass">
+                        <div className="w-10 h-10 rounded-full overflow-hidden border-none glass">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
@@ -69,10 +65,11 @@ const TopBar = () => {
                             <>
                                 <div className="fixed inset-0 z-[-1]" onClick={() => setIsOpen(false)} />
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                    initial={{ opacity: 0, scale: 0.95, y: 15 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    className="absolute right-0 mt-2 w-48 glass rounded-2xl border border-white/10 shadow-2xl p-2 overflow-hidden"
+                                    exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                                    transition={{ duration: 0.4, ease: "anticipate" }}
+                                    className="absolute right-0 mt-4 w-56 glass rounded-[24px] border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] p-3 overflow-hidden"
                                 >
                                     <Link
                                         to="/profile"

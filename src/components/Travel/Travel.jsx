@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, MapPin, CloudSun, Calendar, ChevronRight } from 'lucide-react';
-import { supabase } from '../../supabaseClient';
+import { TravelRepository } from '../../repositories/TravelRepository';
 import Globe3D from './Globe3D';
 
 const Travel = () => {
@@ -11,8 +11,8 @@ const Travel = () => {
 
     useEffect(() => {
         const fetchTrips = async () => {
-            const { data } = await supabase.from('trips').select('*').order('start_date', { ascending: true });
-            if (data) setTrips(data);
+            const data = await TravelRepository.getTrips();
+            setTrips(data);
             setLoading(false);
         };
         fetchTrips();

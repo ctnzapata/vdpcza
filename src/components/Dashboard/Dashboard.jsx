@@ -7,6 +7,7 @@ import { QuoteRepository } from '../../repositories/QuoteRepository';
 import AIChat from './AIChat';
 import MoodTracker from './MoodTracker';
 import DailyTrivia from './DailyTrivia';
+import { setupPushNotifications } from '../../utils/pushUtils';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -62,8 +63,12 @@ const Dashboard = () => {
         };
         fetchQuote();
 
+        if (user?.id) {
+            setupPushNotifications(user.id);
+        }
+
         return () => clearInterval(timer);
-    }, [startDateStr, isAdmin]); // Re-run if admin status changes
+    }, [startDateStr, isAdmin, user]); // Re-run if admin status changes
 
     return (
         <div className="space-y-16 pb-32">

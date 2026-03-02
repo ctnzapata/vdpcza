@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Gift, Lock, Unlock, Sparkles, Mail, Plus, Pencil, Trash2, X, Save } from 'lucide-react';
 import { GiftRepository } from '../../repositories/GiftRepository';
 import { useAuth } from '../../context/AuthContext';
+import { notifyPartner } from '../../utils/sendPushNotification';
 
 const Gifts = () => {
     const { user } = useAuth();
@@ -43,6 +44,11 @@ const Gifts = () => {
         try {
             await GiftRepository.toggleLock(gift.id, gift.is_received);
             fetchGifts();
+
+            // Si estaba bloqueado (false) y ahora se desbloqueó (true), avisar
+            if (!gift.is_received) {
+                notifyPartner(user.id, "🔓 ¡Se ha desbloqueado una sorpresa!", `Puedes ir a leer: ${gift.title}`, "/gifts");
+            }
         } catch (error) {
             alert('Error toggling lock: ' + error.message);
         }
@@ -78,6 +84,12 @@ const Gifts = () => {
                 await GiftRepository.updateGift(editingGift.id, giftData);
             } else {
                 await GiftRepository.createGift(giftData);
+                // Notificar sobre un sobre nuevo creado
+                if (giftData.is_received) {
+                    notifyPartner(user.id, "💌 Tienes una nueva carta", "Hice algo especial, ya puedes abrirlo.");
+                } else {
+                    notifyPartner(user.id, "✨ He preparado una sorpresa", "Hay un nuevo sobre secreto esperando por ti...");
+                }
             }
             setEditingGift(null);
             fetchGifts();

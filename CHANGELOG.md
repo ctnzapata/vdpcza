@@ -8,6 +8,8 @@
 - **Rediseño: Minimalismo Brutalista**: Transformación completa de la estética visual eliminando bordes excesivos ("AI slop") a favor de sombras masivas, padding extremo y desenfoques radicales (`backdrop-blur-[40px]`).
 - **Páginas Aisladas**: Todos los módulos base (`Gifts.jsx`, `Dashboard.jsx`, `Restaurants.jsx`, `Profile.jsx`) operan ahora sin lógica estricta de bases de datos internamente.
 - **DESIGN.md**: Creación sistemática del archivo `DESIGN.md` fungiendo como fuente de la verdad para mantener una cohesión visual consistente.
+- **Notificaciones Push Web**: Sistema bidireccional de notificaciones Push (PWA) habilitado nativamente. Ahora el dispositivo vibra e ilumina la pantalla cuando se envía una actualización.
+- **Push Serverless API**: Implementación de una arquitectura API en `/api/send_push.js` para Vercel Serverless, garantizando envíos masivos seguros ocultando las llaves VAPID.
 
 ### 🎨 Mejoras de Diseño
 - **Espacio y Contraste**: Se implementó una filosofía "Cosmic Solitude" incrementando drásticamente el uso de espacio vacío y limitando los ruidos visuales.

@@ -8,6 +8,7 @@ import AIChat from './AIChat';
 import MoodTracker from './MoodTracker';
 import DailyTrivia from './DailyTrivia';
 import BirthdayCountdown from './BirthdayCountdown';
+import BirthdayClues from './BirthdayClues';
 import { setupPushNotifications } from '../../utils/pushUtils';
 
 const Dashboard = () => {
@@ -139,6 +140,9 @@ const Dashboard = () => {
 
             {/* Birthday Surprise Countdown */}
             <BirthdayCountdown />
+
+            {/* Birthday Daily Clues */}
+            <BirthdayClues />
 
             {/* Counter Section - Redesigned to be minimalist */}
             <motion.section

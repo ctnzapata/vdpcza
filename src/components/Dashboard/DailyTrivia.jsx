@@ -12,24 +12,35 @@ const DailyTrivia = () => {
     const [loading, setLoading] = useState(true);
 
     const [clueStep, setClueStep] = useState(0);
-    const todayStr = new Date().toLocaleDateString('es-CO'); // Approximate local date string formatting
+    const now = new Date();
 
     // Testing override using URL param ?testBirthday=true
     const urlParams = new URLSearchParams(window.location.search);
     const testMode = urlParams.get('testBirthday') === 'true';
 
-    const isBirthdayMode = testMode || (new Date().getMonth() === 2 && new Date().getDate() === 12); // March 12
+    const isMarch = now.getMonth() === 2; // 0-indexed, 2 is March
+    const currentDay = testMode ? 12 : now.getDate();
 
-    // Sequence of clues for her birthday
-    const birthdayClues = [
-        "Hoy es un día especial... pero tu regalo no se puede envolver en una caja.",
-        "Para descubrirlo, tendrás que usar tu imaginación.",
-        "¿Recuerdas cuánto nos gusta descubrir lugares nuevos?",
-        "Prepara tu maleta, porque en un par de días...",
-        "¡Nos vamos a Guatapé! 🥳🎒"
-    ];
+    const isBirthdayMode = testMode || (isMarch && currentDay >= 2 && currentDay <= 12);
 
-    const isCompleted = selectedAnswer !== null || (isBirthdayMode && clueStep >= birthdayClues.length);
+    // Pistas dia a dia (del 2 al 12 de marzo)
+    const dailyClues = {
+        2: "Hoy empieza la cuenta regresiva... pero tu regalo no se puede envolver en una caja.",
+        3: "No es un objeto físico, sino una experiencia inolvidable para nosotros.",
+        4: "Tiene que ver con paisajes hermosos y desconexión total de la rutina.",
+        5: "¿Recuerdas lo mucho que nos gusta descubrir lugares mágicos juntos?",
+        6: "Imagina un lugar lleno de vida, colores y el clima perfecto para abrazarnos.",
+        7: "Ve pensando en ropa cómoda, tal vez un traje de baño o buen abrigo, quién sabe...",
+        8: "Para ir atando cabos, tendrás que usar toda tu imaginación y sentido aventurero.",
+        9: "Solo faltan 3 días para tu sorpresa y la emoción no me cabe en el pecho.",
+        10: "Ya puedes ir sacando la maleta, porque nuestra aventura empieza en un par de días.",
+        11: "Mañana es tu cumpleaños. El inicio de nuestra próxima gran historia... duerme bien.",
+        12: "¡LLEGÓ EL DÍA!"
+    };
+
+    const currentClue = dailyClues[currentDay] || "¡Pronto habrá una gran sorpresa!";
+
+    const isCompleted = selectedAnswer !== null || isBirthdayMode;
 
     useEffect(() => {
         const fetchQuestion = async () => {
@@ -63,14 +74,6 @@ const DailyTrivia = () => {
             setShowConfetti(true);
             setTimeout(() => setShowConfetti(false), 5000);
         }
-    };
-
-    const handleNextClue = () => {
-        if (clueStep === birthdayClues.length - 2) {
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 8000);
-        }
-        setClueStep(prev => prev + 1);
     };
 
     if (loading || (!question && !isBirthdayMode)) return null;
@@ -109,24 +112,25 @@ const DailyTrivia = () => {
 
                 {isBirthdayMode ? (
                     <motion.div
-                        key={clueStep}
+                        key={currentDay}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         className="relative z-10 text-center"
                     >
-                        {clueStep < birthdayClues.length ? (
-                            <div className="space-y-8 glass p-6 rounded-3xl bg-amber-500/5 border-amber-300/20">
-                                <p className="text-2xl font-serif text-white/90 leading-relaxed font-medium">"{birthdayClues[clueStep]}"</p>
-                                <button
-                                    onClick={handleNextClue}
-                                    className="px-8 py-3 bg-amber-500/20 text-amber-200 border border-amber-400/30 text-[10px] font-black tracking-widest uppercase rounded-full hover:bg-amber-500 hover:text-white transition-all w-full md:w-auto"
-                                >
-                                    {clueStep === birthdayClues.length - 1 ? 'Descubrir mi regalo' : 'Siguiente Pista'}
-                                </button>
+                        {currentDay < 12 ? (
+                            <div className="space-y-6 glass p-8 rounded-3xl bg-amber-500/5 border border-amber-300/20 shadow-inner">
+                                <p className="text-[10px] uppercase tracking-widest text-amber-300/70 font-bold mb-2">Pista del Día ({currentDay} de Marzo)</p>
+                                <p className="text-2xl font-serif text-white/90 leading-relaxed font-medium">"{currentClue}"</p>
+                                <p className="text-xs text-rose-200/50 mt-6 italic">Vuelve mañana para una nueva pista especial...</p>
                             </div>
                         ) : (
-                            <div className="p-8 rounded-[20px] bg-rose-500/10 border border-amber-400/30 backdrop-blur-sm shadow-[0_0_30px_rgba(251,191,36,0.15)] overflow-hidden relative">
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="p-8 rounded-[20px] bg-rose-500/10 border border-amber-400/30 backdrop-blur-sm shadow-[0_0_30px_rgba(251,191,36,0.15)] overflow-hidden relative"
+                            >
                                 <div className="absolute -top-10 -right-10 w-48 h-48 bg-amber-500/20 blur-3xl rounded-full" />
                                 <h3 className="text-3xl font-serif text-amber-300 mb-4 font-bold relative z-10">Pase a la Aventura</h3>
                                 <p className="text-sm font-serif italic text-rose-200/80 mb-8 relative z-10">
@@ -140,7 +144,7 @@ const DailyTrivia = () => {
                                 >
                                     Ver Mi Regalo Oficial
                                 </a>
-                            </div>
+                            </motion.div>
                         )}
                     </motion.div>
                 ) : !isCompleted ? (

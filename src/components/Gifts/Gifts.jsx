@@ -103,13 +103,13 @@ const Gifts = () => {
             <header className="px-1 flex justify-between items-end">
                 <div>
                     <h1 className="text-4xl font-serif text-white">Cartas & Regalos</h1>
-                    <p className="text-[9px] text-rose-400 font-bold uppercase tracking-[.3em] mt-1">Nuestra Colección de Momentos</p>
+                    <p className="text-sm font-medium text-rose-400 mt-2 tracking-wide">Nuestra Colección de Momentos</p>
                 </div>
                 {isAdmin && (
                     <motion.button
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setEditingGift({ title: '', description: '', is_received: false })}
-                        className="p-3 glass rounded-xl text-white bg-rose-500/20 border-rose-500/30 hover:bg-rose-500/40"
+                        className="p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all border border-white/10 shadow-sm"
                     >
                         <Plus size={20} />
                     </motion.button>
@@ -129,9 +129,9 @@ const Gifts = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
                             onClick={() => handleEnvelopeClick(gift)}
-                            className={`relative aspect-[4/3] sm:aspect-[3/1] rounded-[32px] cursor-pointer group transition-all duration-500 transform overflow-hidden ${gift.is_received
-                                ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_20px_50px_rgba(244,63,94,0.3)] hover:-translate-y-1'
-                                : 'bg-slate-900 border border-white/10 text-slate-500 hover:border-white/20 hover:bg-slate-800'
+                            className={`relative aspect-[4/3] sm:aspect-[3/1] rounded-3xl cursor-pointer group transition-all duration-500 transform overflow-hidden ${gift.is_received
+                                ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg hover:-translate-y-1'
+                                : 'bg-[#1c1c1e] border border-white/10 text-slate-400 hover:border-white/20 hover:bg-[#2c2c2e]'
                                 }`}
                         >
                             {/* Admin Controls */}
@@ -162,8 +162,8 @@ const Gifts = () => {
                                     <>
                                         <Mail className="w-12 h-12 opacity-30" />
                                         <div className="flex flex-col items-center">
-                                            <h3 className="text-lg font-serif mb-1 opacity-60">{gift.title}</h3>
-                                            <p className="text-[10px] uppercase font-black tracking-[.3em] opacity-40">Bloqueado</p>
+                                            <h3 className="text-lg font-serif mb-1 opacity-80">{gift.title}</h3>
+                                            <p className="text-xs font-semibold uppercase tracking-widest opacity-60 mb-2">Bloqueado</p>
                                         </div>
                                     </>
                                 )}
@@ -196,7 +196,7 @@ const Gifts = () => {
                             </div>
                             <p className="text-right font-serif italic text-rose-500 mt-8">— Con todo mi amor</p>
 
-                            <button onClick={() => setSelectedLetter(null)} className="mt-8 w-full py-3 bg-rose-500 text-white font-black uppercase tracking-widest text-[9px] rounded-xl hover:bg-rose-600 transition-colors">
+                            <button onClick={() => setSelectedLetter(null)} className="mt-8 w-full py-3 bg-rose-500 text-white font-bold uppercase tracking-wider text-xs rounded-xl hover:bg-rose-600 shadow-md transition-colors">
                                 Guardar Carta
                             </button>
                         </motion.div>
@@ -223,35 +223,35 @@ const Gifts = () => {
 
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Título del Sobre</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-white/50">Título del Sobre</label>
                                     <input
                                         type="text"
                                         placeholder="Ej: Para cuando me extrañes..."
-                                        className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-white outline-none focus:border-rose-500/50 transition-all font-serif"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white outline-none focus:border-rose-500/50 focus:bg-white/10 transition-all font-serif"
                                         value={editingGift.title}
                                         onChange={e => setEditingGift({ ...editingGift, title: e.target.value })}
                                         required
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Contenido de la Carta</label>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-white/50">Contenido de la Carta</label>
                                     <textarea
                                         placeholder="Escribe aquí tu mensaje secreto..."
-                                        className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-white outline-none focus:border-rose-500/50 transition-all min-h-[200px] font-serif leading-relaxed"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white outline-none focus:border-rose-500/50 focus:bg-white/10 transition-all min-h-[200px] font-serif leading-relaxed"
                                         value={editingGift.description}
                                         onChange={e => setEditingGift({ ...editingGift, description: e.target.value })}
                                         required
                                     />
                                 </div>
-                                <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl cursor-pointer" onClick={() => setEditingGift({ ...editingGift, is_received: !editingGift.is_received })}>
+                                <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl cursor-pointer hover:bg-white/10 transition-colors" onClick={() => setEditingGift({ ...editingGift, is_received: !editingGift.is_received })}>
                                     <div className={`w-10 h-6 rounded-full relative transition-colors ${editingGift.is_received ? 'bg-rose-500' : 'bg-slate-600'}`}>
-                                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${editingGift.is_received ? 'left-5' : 'left-1'}`} />
+                                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${editingGift.is_received ? 'left-5' : 'left-1 shadow-sm'}`} />
                                     </div>
-                                    <span className="text-xs text-slate-300">¿Desbloqueado inmediatamente?</span>
+                                    <span className="text-sm font-medium text-white/80">¿Desbloqueado inmediatamente?</span>
                                 </div>
                             </div>
 
-                            <button type="submit" className="w-full mt-8 py-4 bg-rose-500 text-white rounded-[20px] font-bold uppercase tracking-widest shadow-xl shadow-rose-900/50 hover:bg-rose-600 transition-all flex items-center justify-center gap-2">
+                            <button type="submit" className="w-full mt-8 py-4 bg-rose-500 text-white rounded-2xl font-bold uppercase tracking-wider shadow-md hover:bg-rose-600 transition-all flex items-center justify-center gap-2">
                                 <Save size={18} />
                                 <span>Guardar</span>
                             </button>

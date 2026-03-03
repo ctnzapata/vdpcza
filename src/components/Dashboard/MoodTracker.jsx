@@ -20,14 +20,18 @@ const PartnerMoodBox = ({ partnerMood }) => {
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`p-6 rounded-[32px] flex items-center gap-5 glass border-none shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden group`}
+            className={`p-6 rounded-[2.5rem] flex items-center gap-5 glass relative overflow-hidden group shadow-[0_20px_40px_-20px_rgba(244,63,94,0.1)]`}
         >
-            <div className={`p-4 rounded-[24px] bg-white/[0.02] ${moodInfo.color} transition-transform group-hover:scale-105`}>
-                <Icon size={28} />
+            <div className={`p-4 rounded-[24px] bg-white/[0.03] ${moodInfo.color} transition-transform group-hover:scale-105 border border-[currentColor] border-opacity-10`}>
+                <Icon size={26} strokeWidth={1.5} />
             </div>
             <div>
-                <p className="text-[9px] text-white/30 uppercase tracking-[.3em] font-black mb-2">Tu pareja dice</p>
-                <p className="text-2xl font-serif text-white/90 tracking-wide font-medium">Estoy <span className={`${moodInfo.color} italic font-bold`}>{moodInfo.label.toLowerCase()}</span></p>
+                <p className="text-[10px] font-bold text-rose-300/60 uppercase tracking-[.3em] mb-1.5 flex items-center gap-1.5">
+                    Tu pareja se siente <Heart size={10} className="text-rose-400 animate-pulse inline" />
+                </p>
+                <p className="text-2xl font-serif font-medium text-rose-50/90 tracking-wide">
+                    <span className={`${moodInfo.color} font-semibold italic drop-shadow-sm`}>{moodInfo.label}</span>
+                </p>
             </div>
         </motion.div>
     );
@@ -86,8 +90,8 @@ const MoodTracker = () => {
             <PartnerMoodBox partnerMood={partnerMood} />
 
             <div className="px-2">
-                <h3 className="text-[9px] font-black text-white/30 uppercase tracking-[.4em] mb-8 text-center text-center">¿Cómo te sientes?</h3>
-                <div className="grid grid-cols-4 gap-2">
+                <h3 className="text-[10px] font-black text-rose-200/50 uppercase tracking-[.3em] mb-6 text-center">¿Cómo te sientes hoy, mi amor?</h3>
+                <div className="grid grid-cols-4 gap-3">
                     {moods.map(m => {
                         const Icon = m.icon;
                         const isSelected = currentMood?.mood === m.type;
@@ -97,12 +101,12 @@ const MoodTracker = () => {
                                 onClick={() => updateMood(m.type)}
                                 disabled={loading}
                                 className={`group flex flex-col items-center gap-3 p-4 rounded-[24px] transition-all duration-300 relative ${isSelected
-                                    ? `bg-white/[0.04] ${m.color} scale-105`
-                                    : 'bg-transparent text-white/20 hover:text-white/60 hover:bg-white/[0.02]'
+                                    ? `bg-white/[0.04] ${m.color} shadow-[0_10px_20px_-10px_currentColor] border border-[currentColor] border-opacity-20 transform scale-105`
+                                    : 'bg-transparent text-rose-100/30 hover:text-rose-100/80 hover:bg-white/[0.02]'
                                     }`}
                             >
-                                <Icon size={24} className={`transition-all duration-500 stroke-[1.5] ${isSelected ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110 group-hover:stroke-2'}`} />
-                                <span className={`text-[8px] uppercase font-black tracking-widest transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>{m.label}</span>
+                                <Icon size={24} strokeWidth={isSelected ? 2 : 1.5} className={`transition-all duration-300 ${isSelected ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110 group-hover:stroke-2'}`} />
+                                <span className={`text-[8px] uppercase font-bold tracking-widest transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>{m.label}</span>
                             </button>
                         );
                     })}

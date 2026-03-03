@@ -20,7 +20,7 @@
     }
 
     body {
-        @apply bg-[#030303] text-slate-100 selection:bg-rose-500/20 selection:text-white;
+        @apply bg-[#0a0508] text-rose-50 selection:bg-rose-500/30 selection:text-white;
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -34,26 +34,25 @@
     }
 }
 
-/* --- BRUTAL MINIMAL GLASSPHISM --- */
+/* --- ROMANTIC GLASS --- */
 @utility glass {
-    @apply backdrop-blur-[40px] bg-white/[0.015] border border-white/[0.03];
-    box-shadow:
-        0 4px 24px -1px rgba(0, 0, 0, 0.2),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    @apply backdrop-blur-xl bg-white/[0.02] border border-rose-200/[0.08];
+    box-shadow: 0 8px 32px 0 rgba(244, 63, 94, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @utility glass-card {
-    @apply glass rounded-[40px] overflow-hidden relative;
+    @apply glass rounded-3xl overflow-hidden relative;
 
     &:hover {
-        @apply border-white/[0.06] bg-white/[0.03] -translate-y-2;
-        box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.5), 0 0 40px -10px rgba(244, 63, 94, 0.1);
+        @apply bg-white/[0.04] border-rose-300/[0.15];
+        box-shadow: 0 16px 40px -10px rgba(244, 63, 94, 0.15), 0 0 20px -5px rgba(244, 63, 94, 0.1);
+        transform: translateY(-4px);
     }
 }
 
 @utility glass-button {
-    @apply glass flex items-center justify-center p-4 rounded-2xl active:scale-95 hover:bg-white/[0.08] hover:border-white/[0.2] transition-all cursor-pointer select-none;
+    @apply glass flex items-center justify-center p-3 rounded-2xl active:scale-95 hover:bg-rose-500/10 hover:border-rose-400/[0.3] hover:text-rose-200 transition-all cursor-pointer select-none;
 }
 
 @utility text-gradient {

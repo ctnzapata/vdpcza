@@ -66,7 +66,7 @@ const DailyTrivia = () => {
                         </div>
                         <div>
                             <h3 className="text-xl font-serif font-medium text-rose-50">Trivia de Hoy</h3>
-                            <p className="text-[10px] font-bold uppercase tracking-[.3em] text-rose-300/50 mt-1">Te equivocates, No me conoces es nada</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[.3em] text-rose-300/50 mt-1">Conozcamos más de nosotros</p>
                         </div>
                     </div>
                     {isCompleted && (
@@ -151,7 +151,7 @@ const DailyTrivia = () => {
                             className="text-center mt-8"
                         >
                             <p className={`text-xs font-semibold tracking-wide ${isCorrect ? 'text-green-400' : 'text-rose-400'}`}>
-                                {isCorrect ? '✨ Conexión Perfecta ✨' : 'Sigue intentándolo, mi amor'}
+                                {isCorrect ? '✨ Conexión Perfecta ✨' : 'Te quivocates, no me conoces es nada'}
                             </p>
                         </motion.div>
                     )}

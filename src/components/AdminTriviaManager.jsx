@@ -70,7 +70,6 @@ const AdminTriviaManager = ({ onClose }) => {
 
         const dataToSave = {
             question: formData.question,
-            q: formData.question, // Keep both for backward compatibility
             options: formData.options,
             correct_answer: formData.correct_answer
         };

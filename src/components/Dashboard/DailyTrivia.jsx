@@ -13,7 +13,12 @@ const DailyTrivia = () => {
 
     const [clueStep, setClueStep] = useState(0);
     const todayStr = new Date().toLocaleDateString('es-CO'); // Approximate local date string formatting
-    const isBirthdayMode = new Date().getMonth() === 2 && new Date().getDate() === 12; // March 12
+
+    // Testing override using URL param ?testBirthday=true
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('testBirthday') === 'true';
+
+    const isBirthdayMode = testMode || (new Date().getMonth() === 2 && new Date().getDate() === 12); // March 12
 
     // Sequence of clues for her birthday
     const birthdayClues = [

@@ -9,11 +9,20 @@ const BirthdayCountdown = () => {
     const [isOpened, setIsOpened] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
 
+    // Testing override using URL param ?testBirthday=true
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('testBirthday') === 'true';
+
     // Target date: March 12, 2026
     const targetDate = new Date('2026-03-12T00:00:00');
 
     useEffect(() => {
         const calculateTime = () => {
+            if (testMode) {
+                setIsBirthday(true);
+                return;
+            }
+
             const now = new Date();
             const difference = targetDate.getTime() - now.getTime();
 

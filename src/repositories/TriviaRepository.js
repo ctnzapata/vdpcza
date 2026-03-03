@@ -25,5 +25,61 @@ export const TriviaRepository = {
             console.error("Unexpected error in TriviaRepository:", error);
             return null;
         }
+    },
+
+    /**
+     * Retrieves all trivia questions (Admin only).
+     */
+    async getAllQuestions() {
+        try {
+            const { data, error } = await supabase.from('trivia_questions').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error("Error fetching all trivia questions:", error);
+            throw error;
+        }
+    },
+
+    /**
+     * Creates a new trivia question.
+     */
+    async createQuestion(questionData) {
+        try {
+            const { data, error } = await supabase.from('trivia_questions').insert([questionData]).select();
+            if (error) throw error;
+            return data[0];
+        } catch (error) {
+            console.error("Error creating trivia question:", error);
+            throw error;
+        }
+    },
+
+    /**
+     * Updates an existing trivia question.
+     */
+    async updateQuestion(id, questionData) {
+        try {
+            const { data, error } = await supabase.from('trivia_questions').update(questionData).eq('id', id).select();
+            if (error) throw error;
+            return data[0];
+        } catch (error) {
+            console.error("Error updating trivia question:", error);
+            throw error;
+        }
+    },
+
+    /**
+     * Deletes a trivia question.
+     */
+    async deleteQuestion(id) {
+        try {
+            const { error } = await supabase.from('trivia_questions').delete().eq('id', id);
+            if (error) throw error;
+            return true;
+        } catch (error) {
+            console.error("Error deleting trivia question:", error);
+            throw error;
+        }
     }
 };

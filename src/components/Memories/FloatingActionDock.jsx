@@ -15,7 +15,7 @@ const FloatingActionDock = ({
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
-                className="fixed bottom-32 sm:bottom-12 left-1/2 -translate-x-1/2 z-[100] px-4"
+                className="fixed bottom-40 sm:bottom-32 left-1/2 -translate-x-1/2 z-[100] px-4"
             >
                 <div className="flex items-center gap-3 p-3 bg-slate-950/60 backdrop-blur-2xl border border-white/10 rounded-full shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]">
 

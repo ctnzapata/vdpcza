@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Utensils, Star, MapPin, Plus, Trash2, MessageSquare, ChevronRight, X, Edit2 } from 'lucide-react';
+import { Utensils, Star, X, Trash2 } from 'lucide-react';
 import { RestaurantRepository } from '../../repositories/RestaurantRepository';
+
+import RestaurantHeader from './RestaurantHeader';
+import RestaurantCard from './RestaurantCard';
+import FloatingActionDock from '../Memories/FloatingActionDock';
 
 const Restaurants = () => {
     const [restaurants, setRestaurants] = useState([]);
@@ -39,7 +43,7 @@ const Restaurants = () => {
     };
 
     const deleteRes = async (id) => {
-        if (window.confirm('¿Eliminar este restaurante?')) {
+        if (window.confirm('¿Eliminar este restaurante de nuestra guía?')) {
             try {
                 await RestaurantRepository.deleteRestaurant(id);
                 fetchRestaurants();
@@ -50,70 +54,37 @@ const Restaurants = () => {
     };
 
     return (
-        <div className="space-y-8 pb-32">
-            <header className="flex justify-between items-end px-1">
-                <div>
-                    <h1 className="text-4xl font-serif text-white">Nuestros Lugares</h1>
-                    <p className="text-[9px] text-rose-400 font-bold uppercase tracking-[.3em] mt-1">Sabores que amamos</p>
-                </div>
-                <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => { setShowModal(true); setEditingRes(null); setNewRes({ name: '', cuisine: '', location: '', image_url: '' }); }}
-                    className="p-4 glass rounded-2xl text-white border-white/20 hover:bg-white/10"
-                >
-                    <Plus size={20} />
-                </motion.button>
-            </header>
+        <div className="space-y-8 pb-48 relative min-h-screen">
+            {/* Dynamic Michelin Background */}
+            <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-0 w-full h-full bg-[#050505]" />
+                <div className="absolute top-1/4 -right-1/4 w-[800px] h-[800px] bg-amber-900/10 rounded-full blur-[150px]" />
+                <div className="absolute bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-rose-900/5 rounded-full blur-[120px]" />
+            </div>
 
-            <div className="grid grid-cols-1 gap-8">
+            <RestaurantHeader onAddClick={() => { setShowModal(true); setEditingRes(null); setNewRes({ name: '', cuisine: '', location: '', image_url: '' }); }} />
+
+            <div className="px-4 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 relative z-10 max-w-6xl mx-auto">
                 {loading ? (
-                    <div className="p-20 text-center"><p className="text-slate-500 animate-pulse text-[10px] uppercase tracking-widest">Buscando mesas...</p></div>
+                    <div className="col-span-full py-32 text-center text-rose-500/50 animate-pulse text-[10px] uppercase tracking-[.4em]">Buscando reservas...</div>
                 ) : restaurants.length === 0 ? (
-                    <div className="glass-card p-12 text-center border-dashed border-white/10">
-                        <Utensils className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-                        <p className="text-slate-400 font-serif italic">Aún no hemos anotado ningún sitio...</p>
+                    <div className="col-span-full glass-card p-16 sm:p-24 text-center border-dashed border-white/5 flex flex-col items-center justify-center rounded-[3rem]">
+                        <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                            <Utensils className="w-10 h-10 text-rose-400/50" />
+                        </div>
+                        <p className="text-white/40 font-serif italic text-2xl mb-8 max-w-sm">El mapa está en blanco. ¿Dónde será nuestra próxima cita?</p>
+                        <button onClick={() => setShowModal(true)} className="px-8 py-4 bg-rose-500 rounded-full text-white text-[10px] font-black uppercase tracking-[.3em] shadow-[0_0_20px_rgba(244,63,94,0.4)] hover:scale-105 transition-transform">Agregar Lugar</button>
                     </div>
                 ) : (
                     restaurants.map((res, idx) => (
-                        <motion.div
+                        <RestaurantCard
                             key={res.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: idx * 0.1 }}
-                            className="glass-card overflow-hidden group border-white/10"
-                        >
-                            <div className="relative h-48 overflow-hidden">
-                                <img src={res.image_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=1000'} alt={res.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                                <div className="absolute top-4 right-4 flex gap-2">
-                                    <button onClick={() => { setEditingRes(res); setNewRes(res); setShowModal(true); }} className="p-2 glass rounded-lg text-white hover:bg-white/20 transition-colors">
-                                        <Edit2 size={16} />
-                                    </button>
-                                    <button onClick={() => deleteRes(res.id)} className="p-2 glass rounded-lg text-white hover:bg-rose-500/50 transition-colors">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="p-6">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <h2 className="text-2xl font-serif text-white">{res.name}</h2>
-                                        <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mt-1">{res.cuisine || 'Comida Variada'}</p>
-                                    </div>
-                                    <button
-                                        onClick={() => setSelectedRes(res)}
-                                        className="p-3 glass rounded-2xl border-white/5 text-slate-400 hover:text-white transition-all flex items-center gap-2 group/btn"
-                                    >
-                                        <MessageSquare size={18} />
-                                        <span className="text-[10px] uppercase font-black tracking-widest hidden sm:inline">Opiniones</span>
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-3 text-slate-400">
-                                    <MapPin size={16} className="text-rose-500" />
-                                    <span className="text-sm font-light italic truncate">{res.location || 'Dirección no añadida'}</span>
-                                </div>
-                            </div>
-                        </motion.div>
+                            res={res}
+                            idx={idx}
+                            onEdit={() => { setEditingRes(res); setNewRes(res); setShowModal(true); }}
+                            onDelete={() => deleteRes(res.id)}
+                            onReviews={() => setSelectedRes(res)}
+                        />
                     ))
                 )}
             </div>
@@ -121,22 +92,37 @@ const Restaurants = () => {
             {/* Modal for CRUD Restaurant */}
             <AnimatePresence>
                 {showModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowModal(false)} className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" />
+                    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowModal(false)} className="absolute inset-0 bg-black/90 backdrop-blur-2xl" />
                         <motion.form
-                            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
                             onSubmit={handleSave}
-                            className="relative glass rounded-[40px] p-8 max-w-sm w-full border-white/10"
+                            className="relative glass-card rounded-[40px] p-8 sm:p-12 max-w-md w-full border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.8)]"
                         >
-                            <h2 className="text-2xl font-serif text-white mb-6">{editingRes ? 'Editar Lugar' : 'Añadir Lugar'}</h2>
-                            <div className="space-y-4">
-                                <input placeholder="Nombre del sitio" className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white" value={newRes.name} onChange={e => setNewRes({ ...newRes, name: e.target.value })} required />
-                                <input placeholder="Tipo de cocina (ej. Italiana)" className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white" value={newRes.cuisine} onChange={e => setNewRes({ ...newRes, cuisine: e.target.value })} />
-                                <input placeholder="Ubicación / Dirección" className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white" value={newRes.location} onChange={e => setNewRes({ ...newRes, location: e.target.value })} />
-                                <input placeholder="URL de la imagen" className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white" value={newRes.image_url} onChange={e => setNewRes({ ...newRes, image_url: e.target.value })} />
+                            <button type="button" onClick={() => setShowModal(false)} className="absolute top-6 right-6 p-2 bg-white/5 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"><X size={20} /></button>
+                            <h2 className="text-3xl font-serif text-white mb-8 pr-8">{editingRes ? 'Editar Experiencia' : 'Nueva Experiencia'}</h2>
+                            <div className="space-y-5">
+                                <div>
+                                    <label className="text-[10px] text-rose-400 uppercase font-black tracking-widest block mb-2 px-1">Nombre del Lugar</label>
+                                    <input autoFocus placeholder="El Rincón Italiano..." className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-rose-500 focus:bg-white/5 transition-all text-lg font-serif" value={newRes.name} onChange={e => setNewRes({ ...newRes, name: e.target.value })} required />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="col-span-1">
+                                        <label className="text-[10px] text-rose-400 uppercase font-black tracking-widest block mb-2 px-1">Cocina</label>
+                                        <input placeholder="Italiana..." className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-rose-500 focus:bg-white/5 transition-all text-sm" value={newRes.cuisine} onChange={e => setNewRes({ ...newRes, cuisine: e.target.value })} />
+                                    </div>
+                                    <div className="col-span-1">
+                                        <label className="text-[10px] text-rose-400 uppercase font-black tracking-widest block mb-2 px-1">Ubicación</label>
+                                        <input placeholder="Centro histórico..." className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-rose-500 focus:bg-white/5 transition-all text-sm" value={newRes.location} onChange={e => setNewRes({ ...newRes, location: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest block mb-2 px-1">URL de la Imagen (Paster Link)</label>
+                                    <input placeholder="https://..." className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white/50 focus:outline-none focus:border-rose-500 focus:bg-white/5 transition-all text-xs" value={newRes.image_url} onChange={e => setNewRes({ ...newRes, image_url: e.target.value })} />
+                                </div>
                             </div>
-                            <button type="submit" className="w-full mt-8 py-5 bg-rose-500 text-white rounded-[24px] text-[10px] font-black uppercase tracking-[.3em] shadow-2xl">
-                                {editingRes ? 'Actualizar' : 'Guardar Lugar'}
+                            <button type="submit" className="w-full mt-10 py-5 bg-gradient-to-r from-rose-500 to-rose-600 text-white rounded-full text-[10px] font-black uppercase tracking-[.3em] shadow-[0_10px_30px_rgba(244,63,94,0.4)] hover:scale-105 transition-transform">
+                                {editingRes ? 'Guardar Cambios' : 'Añadir a la Guía'}
                             </button>
                         </motion.form>
                     </div>
@@ -189,46 +175,59 @@ const ReviewsModal = ({ restaurant, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-950/90 backdrop-blur-md" />
+        <div className="fixed inset-0 z-[200] flex items-end justify-center p-0 sm:p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/95 backdrop-blur-3xl" />
             <motion.div
-                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-                className="relative w-full max-w-md bg-slate-900/50 glass rounded-t-[40px] sm:rounded-[40px] border-white/10 overflow-hidden flex flex-col max-h-[90vh]"
+                initial={{ y: '100%', opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: '100%', opacity: 0 }} transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="relative w-full max-w-2xl bg-slate-900 border-t sm:border border-white/10 rounded-t-[3rem] sm:rounded-[3rem] overflow-hidden flex flex-col h-[90vh] sm:h-[85vh] shadow-[0_-20px_50px_rgba(0,0,0,0.5)]"
             >
-                <div className="p-8 pb-4 flex justify-between items-center bg-gradient-to-b from-white/5 to-transparent">
-                    <div>
-                        <h3 className="text-2xl font-serif text-white">{restaurant.name}</h3>
-                        <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mt-1">Opiniones de nosotros</p>
+                {/* Header (Review Card Cover) */}
+                <div className="relative h-48 sm:h-56 w-full flex-shrink-0">
+                    <img src={restaurant.image_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80'} alt={restaurant.name} className="w-full h-full object-cover filter brightness-[0.4]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
+
+                    <button onClick={onClose} className="absolute top-6 right-6 p-3 bg-black/50 backdrop-blur-md rounded-full text-white/50 hover:text-white hover:bg-black/80 transition-all border border-white/10 z-10"><X size={20} /></button>
+
+                    <div className="absolute bottom-6 left-8 right-8">
+                        <p className="text-[9px] text-rose-400 font-bold uppercase tracking-[.4em] mb-1">Diario Gastronómico</p>
+                        <h3 className="text-4xl font-serif text-white tracking-tight drop-shadow-lg">{restaurant.name}</h3>
                     </div>
-                    <button onClick={onClose} className="p-2 glass rounded-full text-white/50 hover:text-white"><X size={20} /></button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-8 space-y-6">
-                    <form onSubmit={handleAddReview} className="glass bg-white/5 p-6 rounded-3xl border-white/5 space-y-4">
-                        <div className="flex gap-2">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 bg-slate-900">
+
+                    {/* Add Review Form */}
+                    <form onSubmit={handleAddReview} className="bg-slate-950/50 p-6 rounded-3xl border border-white/5 space-y-5">
+                        <div className="flex gap-2 justify-center py-2">
                             {[1, 2, 3, 4, 5].map(s => (
-                                <button key={s} type="button" onClick={() => setNewReview({ ...newReview, rating: s })} className={`transition-all ${newReview.rating >= s ? 'text-yellow-400 scale-110' : 'text-slate-700'}`}>
-                                    <Star size={20} fill={newReview.rating >= s ? 'currentColor' : 'none'} />
+                                <button key={s} type="button" onClick={() => setNewReview({ ...newReview, rating: s })} className={`transition-transform duration-300 ${newReview.rating >= s ? 'text-amber-400 scale-125' : 'text-slate-800 hover:scale-110'}`}>
+                                    <Star size={28} fill={newReview.rating >= s ? 'currentColor' : 'none'} strokeWidth={1.5} />
                                 </button>
                             ))}
                         </div>
-                        <textarea placeholder="¿Qué nos pareció?..." className="w-full bg-slate-950/50 border border-white/5 rounded-2xl p-4 text-sm text-white resize-none" value={newReview.comment} onChange={e => setNewReview({ ...newReview, comment: e.target.value })} required />
-                        <button type="submit" className="w-full py-3 bg-white/10 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/10 hover:bg-white/20">Publicar</button>
+                        <textarea placeholder="¿Qué fue lo mejor de esta cita?..." className="w-full bg-slate-900 border border-white/5 rounded-[2rem] p-5 text-sm text-white/90 resize-none font-serif italic focus:outline-none focus:border-rose-500/50 transition-colors" rows={3} value={newReview.comment} onChange={e => setNewReview({ ...newReview, comment: e.target.value })} required />
+                        <button type="submit" className="w-full py-4 bg-white text-slate-900 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 hover:text-rose-600 transition-colors shadow-lg">Dejar Recuerdo</button>
                     </form>
 
-                    <div className="space-y-4">
-                        {loading ? <p className="p-8 text-center text-[10px] text-slate-500 tracking-widest animate-pulse">Cargando...</p> : reviews.map((rev, i) => (
-                            <motion.div key={rev.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="p-5 glass border-white/5 rounded-[24px] relative group">
-                                <div className="flex justify-between items-center mb-2">
-                                    <div className="flex gap-1">
+                    {/* Review List */}
+                    <div className="space-y-4 pb-12">
+                        {loading ? <p className="py-12 text-center text-[10px] text-rose-500/50 tracking-[.3em] font-bold uppercase animate-pulse">Leyendo el diario...</p> : reviews.length === 0 ? (
+                            <p className="text-center text-slate-500 font-serif italic py-8">Aún no hay reseñas escritas sobre este lugar.</p>
+                        ) : reviews.map((rev, i) => (
+                            <motion.div key={rev.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="p-6 bg-white/[0.02] border border-white/5 rounded-[2rem] relative group hover:bg-white/[0.04] transition-colors">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="flex gap-1 bg-amber-900/10 border border-amber-500/20 px-3 py-1.5 rounded-full">
                                         {[...Array(5)].map((_, idx) => (
-                                            <Star key={idx} size={10} className={idx < rev.rating ? 'text-yellow-400 fill-yellow-400' : 'text-slate-800'} />
+                                            <Star key={idx} size={10} className={idx < rev.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-700'} />
                                         ))}
                                     </div>
-                                    <button onClick={() => deleteReview(rev.id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-600 hover:text-rose-500"><Trash2 size={12} /></button>
+                                    <button onClick={() => deleteReview(rev.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 rounded-full"><Trash2 size={14} /></button>
                                 </div>
-                                <p className="text-sm text-slate-300 font-light italic">"{rev.comment}"</p>
-                                <p className="text-[8px] text-slate-600 uppercase mt-3 tracking-widest">{new Date(rev.created_at).toLocaleDateString()}</p>
+                                <p className="text-lg text-slate-300 font-serif leading-relaxed px-1">"{rev.comment}"</p>
+                                <div className="mt-4 flex items-center gap-2 px-1">
+                                    <div className="w-8 h-[1px] bg-rose-500/30" />
+                                    <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest">{new Date(rev.created_at).toLocaleDateString('es-ES', { month: 'long', year: 'numeric', day: 'numeric' })}</p>
+                                </div>
                             </motion.div>
                         ))}
                     </div>

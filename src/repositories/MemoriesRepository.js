@@ -92,5 +92,81 @@ export const MemoriesRepository = {
             .eq('id', albumId);
 
         if (error) throw error;
+    },
+
+    /**
+     * Updates an album's name.
+     */
+    async updateAlbumName(albumId, newName) {
+        const { error } = await supabase
+            .from('albums')
+            .update({ name: newName })
+            .eq('id', albumId);
+
+        if (error) throw error;
+    },
+
+    /**
+     * Deletes a memory from DB and Storage.
+     * @param {string} memoryId
+     * @param {string} imageUrl
+     */
+    async deleteMemory(memoryId, imageUrl) {
+        // Delete from Storage
+        if (imageUrl) {
+            try {
+                const imagePath = imageUrl.split('/memories/')[1];
+                if (imagePath) {
+                    const { error: storageError } = await supabase.storage
+                        .from('memories')
+                        .remove([imagePath]);
+                    if (storageError) console.error("Error deleting from storage:", storageError);
+                }
+            } catch (e) {
+                console.error("Error extracting image path:", e);
+            }
+        }
+
+        // Delete from DB
+        const { error: dbError } = await supabase
+            .from('memories')
+            .delete()
+            .eq('id', memoryId);
+
+        if (dbError) throw dbError;
+    },
+
+    /**
+     * Deletes an album and all its associated memories.
+     * @param {string} albumId
+     */
+    async deleteAlbum(albumId) {
+        // First get all memories to delete from storage
+        const memories = await this.getMemoriesByAlbum(albumId);
+        const imagePaths = memories.map(m => {
+            try {
+                return m.image_url.split('/memories/')[1];
+            } catch (e) {
+                return null;
+            }
+        }).filter(Boolean);
+
+        if (imagePaths.length > 0) {
+            const { error: storageError } = await supabase.storage
+                .from('memories')
+                .remove(imagePaths);
+            if (storageError) console.error("Error deleting album files from storage:", storageError);
+        }
+
+        // Delete memories from DB (just in case cascade isn't on)
+        await supabase.from('memories').delete().eq('album_id', albumId);
+
+        // Delete album from DB
+        const { error: dbError } = await supabase
+            .from('albums')
+            .delete()
+            .eq('id', albumId);
+
+        if (dbError) throw dbError;
     }
 };

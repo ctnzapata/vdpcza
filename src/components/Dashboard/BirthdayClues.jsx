@@ -19,11 +19,11 @@ const BirthdayClues = () => {
     // Pistas dia a dia (del 2 al 12 de marzo)
     const dailyClues = {
         2: "Hoy empieza la cuenta regresiva... pero tu regalo no se puede envolver en una caja.",
-        3: "No es un objeto físico, sino una experiencia inolvidable para nosotros.",
+        3: "Será una experiencia inolvidable para nosotros.",
         4: "Tiene que ver con paisajes hermosos y desconexión total de la rutina.",
-        5: "¿Recuerdas lo mucho que nos gusta descubrir lugares mágicos juntos?",
-        6: "Imagina un lugar lleno de vida, colores y el clima perfecto para abrazarnos.",
-        7: "Ve pensando en ropa cómoda, tal vez un traje de baño o buen abrigo, quién sabe...",
+        5: "Yo sé lo mucho que nos gusta descubrir lugares mágicos juntos",
+        6: "No te hagas aun el piercing del omgligo, yo te lo regalo en el momento oportuno",
+        7: "Ve pensando en ropa cómoda, tal vez un traje de baño o un buen abrigo, quién sabe...",
         8: "Para ir atando cabos, tendrás que usar toda tu imaginación y sentido aventurero.",
         9: "Solo faltan 3 días para tu sorpresa y la emoción no me cabe en el pecho.",
         10: "Ya puedes ir sacando la maleta, porque nuestra aventura empieza en un par de días.",
